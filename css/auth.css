@@ -1,0 +1,276 @@
+/* Design tokens - HSL only */
+:root {
+    --bg: 0 0% 100%;
+    --text: 222.2 84% 4.9%;
+    --muted: 215 16% 46%;
+    --surface: 0 0% 100%;
+    --border: 214 32% 91%;
+    --primary: 256 83% 60%;
+    --primary-contrast: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --success: 142 70% 45%;
+    --ring: 256 83% 60%;
+    --radius: 12px;
+
+    --gradient-primary: linear-gradient(135deg, hsl(256 83% 60%), hsl(286 72% 60%));
+    --shadow-elevated: 0 14px 35px -10px hsl(256 83% 25% / 0.25);
+    --shadow-glow: 0 0 40px hsl(256 83% 60% / 0.35);
+    --transition: all .25s ease;
+
+    --pointer-x: 50%;
+    --pointer-y: 50%;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: 222 84% 5%;
+        --text: 210 40% 98%;
+        --surface: 222 84% 6%;
+        --border: 217 33% 18%;
+    }
+}
+
+/* Base */
+
+    *{
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    color: hsl(var(--text));
+    background: hsl(var(--bg));
+}
+
+.visually-hidden {
+    position: absolute !important;
+    clip: rect(1px, 1px, 1px, 1px);
+    padding: 0;
+    border: 0;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+}
+
+/* Ambient background */
+.auth-bg {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    position: relative;
+}
+
+.auth-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(600px circle at var(--pointer-x) var(--pointer-y), hsl(256 83% 60% / 0.12), transparent 60%);
+}
+
+/* Card */
+.auth-wrap {
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    z-index: 1;
+}
+
+.auth-card {
+    background: hsl(var(--surface));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-elevated);
+    padding: 28px 24px;
+}
+
+.auth-head {
+    margin-bottom: 8px;
+}
+
+.auth-title {
+    margin: 0 0 4px;
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.auth-subtitle {
+    margin: 0;
+    color: hsl(var(--muted));
+    font-size: 14px;
+}
+
+/* Tabs */
+.tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: hsl(var(--bg));
+    border: 1px solid hsl(var(--border));
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+    margin: 16px 0 8px;
+}
+
+.tab {
+    appearance: none;
+    border: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: transparent;
+    color: hsl(var(--muted));
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    outline: none;
+}
+
+.tab:is(:hover, :focus-visible) {
+    color: hsl(var(--text));
+    background: hsl(var(--border) / 0.35);
+}
+
+.tab.is-active {
+    color: hsl(var(--text));
+    background: hsl(var(--surface));
+    box-shadow: 0 1px 0 hsl(var(--border)) inset, 0 0 0 2px hsl(var(--border));
+}
+
+/* Panels */
+.panels {
+    margin-top: 8px;
+}
+
+.panel[hidden] {
+    display: none;
+}
+
+.panel.is-active {
+    display: block;
+}
+
+/* Fields */
+.field {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.input {
+    width: 100%;
+    height: 42px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--bg));
+    color: hsl(var(--text));
+    outline: none;
+    transition: var(--transition);
+}
+
+.input::placeholder {
+    color: hsl(var(--muted));
+}
+
+.input:focus-visible {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.25);
+}
+
+/* Radio group (minimal, matching design) / .fieldset { margin: 10px 0 6px; padding: 0; border: 0; } .radio-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; } .radio-option { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid hsl(var(--border)); border-radius: 10px; background: hsl(var(--bg)); cursor: pointer; transition: var(--transition); } .radio-option:hover { background: hsl(var(--border) / 0.25); } .radio { accent-color: hsl(var(--primary)); } .radio:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; border-radius: 50%; } .radio-text { font-size: 14px; } .radio:checked + .radio-text { font-weight: 700; } @supports(selector(:has())) { .radio-option:has(.radio:checked) { box-shadow: 0 0 0 2px hsl(var(--ring) / 0.6) inset; border-color: hsl(var(--ring)); } }
+    
+    /* Buttons */
+.btn {
+    width: 100%;
+    height: 44px;
+    border: 0;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-hero {
+    color: hsl(var(--primary-contrast));
+    background-image: var(--gradient-primary);
+    box-shadow: var(--shadow-elevated);
+}
+
+.btn-hero:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-glow);
+}
+
+.btn-hero:active {
+    transform: translateY(0);
+}
+
+.btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* Helpers */
+.aux {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.link {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: hsl(var(--text));
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+/* Messages */
+.message {
+    min-height: 20px;
+    margin-top: 14px;
+    font-size: 14px;
+}
+
+.message--error {
+    color: hsl(var(--destructive));
+}
+
+.message--success {
+    color: hsl(var(--success));
+}
+
+/* Small note */
+.note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: hsl(var(--muted));
+}
+
+/* Motion preference */
+@media (prefers-reduced-motion: reduce) {
+
+    .auth-bg::before,
+    .btn,
+    .tab,
+    .input,
+    .radio-option {
+        transition: none;
+    }
+}
