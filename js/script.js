@@ -1,7 +1,7 @@
 // --- Configuration ---
 // IMPORTANT: Replace this with your actual Google Apps Script Web App URL
 // const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVJy40xVo5hpdANMvHupehUgBPIh2E0OwiklDshIivBps7_9cEoieLzKTqS9Hf6gQj/exec'; 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-NWBU3jlQ4JtVDG9msoGSk3LK4k5c8O3cBXTXtC0Rjng-h0Y6JCneWPNY1OmIa60lqQ/exec'; 
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyljNAXSfijybg05g0_FPCAL0eahN3_8u_lxtOXprUaqG-82u4AfQD0qF9QXFTeUibGAw/exec'; 
 
 // --- DOM Element Selection ---
 const showLoginBtn = document.getElementById('show-login');
