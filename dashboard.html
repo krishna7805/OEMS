@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ExamPlatform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Link to your main stylesheet -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Link to the new dashboard-specific stylesheet -->
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="brand-text">ExamPlatform</div>
+                <div class="user-menu">
+                    <span id="user-display-name">Loading...</span>
+                    <button class="btn-secondary" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container">
+            <!-- Welcome Message -->
+            <div class="welcome-banner fade-in">
+                <h1>Welcome back, <span id="welcome-user-name">User</span>!</h1>
+                <p>This is your central hub. Create a new group to get started or join an existing one.</p>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="action-bar fade-in">
+                <div class="action-card">
+                    <h3>Join a Group</h3>
+                    <form id="join-group-form" class="action-form">
+                        <input type="text" id="group-code-input" class="neu-input" placeholder="Enter Group Code">
+                        <button type="submit" class="btn-primary">Join</button>
+                    </form>
+                </div>
+                <div class="action-card">
+                    <h3>Take a Test by ID</h3>
+                    <form id="take-test-form" class="action-form">
+                        <input type="text" id="test-code-input" class="neu-input" placeholder="Enter Test Code">
+                        <button type="submit" class="btn-primary">Start</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="content-area fade-in">
+                <div class="content-header">
+                    <h2>My Groups</h2>
+                    <button class="btn-primary" id="create-group-btn">+ Create New Group</button>
+                </div>
+
+                <div class="groups-grid" id="groups-grid">
+                    <!-- Groups will be dynamically inserted here by JavaScript -->
+                    <p id="no-groups-message">You haven't joined or created any groups yet.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Script must be type="module" to use imports -->
+    <script src="assets/js/dashboard.js" type="module"></script>
+</body>
+
+</html>
+

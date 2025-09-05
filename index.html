@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamPlatform - Collaborative Learning & Assessment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <span class="brand-text">ExamPlatform</span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="nav-menu">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#how-it-works" class="nav-link">How It Works</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                    <button class="btn-primary" id="nav-auth-btn">Get Started</button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="mobile-menu-btn">
+                    <button class="menu-toggle" id="mobile-toggle">
+                        <svg class="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                        <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div class="mobile-menu" id="mobile-menu">
+                <div class="mobile-menu-content">
+                    <a href="#features" class="mobile-nav-link">Features</a>
+                    <a href="#how-it-works" class="mobile-nav-link">How It Works</a>
+                    <a href="#contact" class="mobile-nav-link">Contact</a>
+                    <button class="btn-primary mobile-auth-btn" id="mobile-auth-btn">Get Started</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-grid">
+                    <!-- Left Content -->
+                    <div class="hero-content fade-in">
+                        <h1 class="hero-title">
+                            The Modern Platform for
+                            <span class="text-primary">Collaborative Learning</span>
+                            and Assessment
+                        </h1>
+                        <p class="hero-subtitle">
+                            Create private groups, share tests with a unique code, and manage assessments effortlessly.
+                            Join the future of collaborative education.
+                        </p>
+                        <button class="btn-primary hero-cta" id="hero-auth-btn">Get Started for Free</button>
+
+                        <!-- Trust Indicators -->
+                        <div class="trust-indicators">
+                            <div class="trust-item">
+                                <div class="trust-number">10K+</div>
+                                <div class="trust-label">Active Users</div>
+                            </div>
+                            <div class="trust-item">
+                                <div class="trust-number">50K+</div>
+                                <div class="trust-label">Tests Created</div>
+                            </div>
+                            <div class="trust-item">
+                                <div class="trust-number">99.9%</div>
+                                <div class="trust-label">Uptime</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Content - Exam Card -->
+                    <div class="exam-card floating">
+                        <div class="exam-card-content">
+                            <div class="exam-header">
+                                <h3 class="exam-title">Web Development Quiz</h3>
+                                <div class="exam-status">Active</div>
+                            </div>
+
+                            <div class="exam-details">
+                                <div class="exam-detail">
+                                    <svg class="detail-icon green" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                                    </svg>
+                                    <span>15 Questions</span>
+                                </div>
+                                <div class="exam-detail">
+                                    <svg class="detail-icon blue" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12,6 12,12 16,14"></polyline>
+                                    </svg>
+                                    <span>30 Minutes</span>
+                                </div>
+                                <div class="exam-detail">
+                                    <svg class="detail-icon purple" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                    <span>28 Participants</span>
+                                </div>
+                                <div class="exam-detail">
+                                    <svg class="detail-icon orange" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                    </svg>
+                                    <span>Secure & Private</span>
+                                </div>
+                            </div>
+
+                            <div class="exam-code">
+                                <div class="code-row">
+                                    <span>Test Code:</span>
+                                    <span class="code-value">EX2024</span>
+                                </div>
+                            </div>
+
+                            <button class="btn-primary exam-join-btn">Join Group</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features-section">
+            <div class="container">
+                <div class="section-header fade-in">
+                    <h2 class="section-title">Powerful Features for Modern Learning</h2>
+                    <p class="section-subtitle">
+                        Everything you need to create, share, and manage assessments in a collaborative environment
+                    </p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">
+                                <svg class="icon blue" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="feature-title">Group Collaboration</h3>
+                        <p class="feature-description">Create private groups, invite members with a unique code, and
+                            share tests in a collaborative space.</p>
+                    </div>
+
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">
+                                <svg class="icon green" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="feature-title">Secure Exams</h3>
+                        <p class="feature-description">Advanced security features including time limits, question
+                            randomization, and anti-cheating measures.</p>
+                    </div>
+
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">
+                                <svg class="icon yellow" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="feature-title">Instant Results</h3>
+                        <p class="feature-description">Get immediate feedback and detailed analytics on test performance
+                            and learning progress.</p>
+                    </div>
+
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">
+                                <svg class="icon purple" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="feature-title">Detailed Analytics</h3>
+                        <p class="feature-description">Comprehensive insights into performance trends, question
+                            difficulty, and learning outcomes.</p>
+                    </div>
+
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">
+                                <svg class="icon red" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12,6 12,12 16,14"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="feature-title">Flexible Scheduling</h3>
+                        <p class="feature-description">Schedule tests for specific dates and times, or allow on-demand
+                            access for maximum flexibility.</p>
+                    </div>
+
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">
+                                <svg class="icon orange" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="8" r="7"></circle>
+                                    <polyline points="8.21,13.89 7,23 12,20 17,23 15.79,13.88"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="feature-title">Certification Ready</h3>
+                        <p class="feature-description">Generate certificates and badges automatically based on test
+                            results and completion criteria.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="how-it-works-section">
+            <div class="container">
+                <div class="section-header fade-in">
+                    <h2 class="section-title">How It Works</h2>
+                    <p class="section-subtitle">
+                        Get started in three simple steps and transform your learning experience
+                    </p>
+                </div>
+
+                <div class="steps-grid">
+                    <div class="step-card fade-in">
+                        <div class="step-content">
+                            <div class="step-icon-wrapper">
+                                <div class="step-icon">
+                                    <svg class="icon blue" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="step-number">01</div>
+                            <h3 class="step-title">Register & Login</h3>
+                            <p class="step-description">Create your account in seconds and join the collaborative
+                                learning community.</p>
+                        </div>
+                        <div class="step-connector"></div>
+                    </div>
+
+                    <div class="step-card fade-in">
+                        <div class="step-content">
+                            <div class="step-icon-wrapper">
+                                <div class="step-icon">
+                                    <svg class="icon green" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14,2 14,8 20,8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10,9 9,9 8,9"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="step-number">02</div>
+                            <h3 class="step-title">Create or Take Exams</h3>
+                            <p class="step-description">Build comprehensive tests or join groups using unique codes to
+                                take assessments.</p>
+                        </div>
+                        <div class="step-connector"></div>
+                    </div>
+
+                    <div class="step-card fade-in">
+                        <div class="step-content">
+                            <div class="step-icon-wrapper">
+                                <div class="step-icon">
+                                    <svg class="icon purple" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="step-number">03</div>
+                            <h3 class="step-title">View Results</h3>
+                            <p class="step-description">Access detailed analytics, track progress, and share results
+                                with your group members.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-card fade-in">
+                    <h2 class="cta-title">Ready to Transform Your Learning Experience?</h2>
+                    <p class="cta-subtitle">
+                        Join thousands of learners and educators who are already creating
+                        collaborative learning environments with ExamPlatform.
+                    </p>
+                    <button class="btn-primary cta-button" id="cta-auth-btn">Join Now and Start Collaborating</button>
+
+                    <div class="cta-note">
+                        Free to start • No credit card required • Cancel anytime
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Company Info -->
+                <div class="footer-column">
+                    <div class="footer-brand">ExamPlatform</div>
+                    <p class="footer-description">
+                        The modern platform for collaborative learning and assessment.
+                        Empowering educators and learners worldwide.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z">
+                                </path>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z">
+                                </path>
+                                <rect x="2" y="9" width="4" height="12"></rect>
+                                <circle cx="4" cy="4" r="2"></circle>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="footer-column" id="contact">
+                    <h3 class="footer-title">Contact</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <svg class="contact-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span>hello@examplatform.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <svg class="contact-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                </path>
+                            </svg>
+                            <span>+1 (555) 123-4567</span>
+                        </div>
+                        <div class="contact-item">
+                            <svg class="contact-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span>San Francisco, CA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <div class="copyright">
+                        © 2024 ExamPlatform. All rights reserved.
+                    </div>
+                    <div class="legal-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-container">
+            <!-- Close Button -->
+            <button class="modal-close" id="modal-close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <!-- 3D Flip Card -->
+            <div class="flip-card-container">
+                <div class="flip-card" id="flip-card">
+                    <!-- Login Side (Front) -->
+                    <div class="flip-card-front">
+                        <div class="auth-header">
+                            <h2 class="auth-title">Welcome Back</h2>
+                            <p class="auth-subtitle">Sign in to your account</p>
+                        </div>
+
+                        <form class="auth-form" id="login-form">
+                            <div class="form-fields">
+                                <div class="form-field">
+                                    <svg class="field-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                        </path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <input type="email" name="email" placeholder="Email address" class="form-input"
+                                        required>
+                                </div>
+
+                                <div class="form-field">
+                                    <svg class="field-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <circle cx="12" cy="16" r="1"></circle>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <input type="password" id="login-password" name="password" placeholder="Password"
+                                        class="form-input" required>
+                                    <button type="button" class="password-toggle" id="login-password-toggle">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path
+                                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                            </path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary auth-submit">Sign In</button>
+                            <span>or With</span>
+                            <button type="" class="btn-primary">Google</button>
+                        </form>
+
+                        <div class="auth-footer">
+                            <button class="auth-switch" id="show-signup">No account? Create one</button>
+                        </div>
+                    </div>
+
+                    <!-- Sign Up Side (Back) -->
+                    <div class="flip-card-back">
+                        <div class="auth-header">
+                            <h2 class="auth-title">Join Us Today</h2>
+                            <p class="auth-subtitle">Create your account</p>
+                        </div>
+
+                        <form class="auth-form" id="signup-form">
+                            <div class="form-fields">
+                                <div class="form-field">
+                                    <svg class="field-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <input type="text" name="fullName" placeholder="Full name" class="form-input"
+                                        required>
+                                </div>
+
+                                <div class="form-field">
+                                    <svg class="field-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                        </path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <input type="email" name="email" placeholder="Email address" class="form-input"
+                                        required>
+                                </div>
+
+                                <div class="form-field">
+                                    <svg class="field-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <circle cx="12" cy="16" r="1"></circle>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <input type="password" id="signup-password" name="password" placeholder="Password"
+                                        class="form-input" required>
+                                    <button type="button" class="password-toggle" id="signup-password-toggle">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path
+                                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                            </path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="form-field">
+                                    <svg class="field-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <circle cx="12" cy="16" r="1"></circle>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <input type="password" id="confirm-password" name="confirmPassword"
+                                        placeholder="Confirm password" class="form-input" required>
+                                    <button type="button" class="password-toggle" id="confirm-password-toggle">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path
+                                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                            </path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary auth-submit">Create Account</button>
+                            
+                            <button class="btn-primary">Google</button>
+                        </form>
+                        <div class="auth-footer">
+                            <button class="auth-switch" id="show-login">Already have an account? Sign In</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="assets/js/landing.js"></script>
+</body>
+
+</html>
