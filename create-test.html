@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Editor - ExamPlatform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Project Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <!-- New Page-Specific Styles -->
+    <link rel="stylesheet" href="assets/css/create-test.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="dashboard.html" class="brand-text-link">ExamPlatform</a>
+                <div class="user-menu">
+                    <span id="user-display-name">Loading...</span>
+                    <button class="btn-secondary" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container">
+            <!-- Test Editor Header -->
+            <div class="editor-header">
+                <div class="editor-info">
+                    <a href="#" id="back-to-group-link" class="back-link">&larr; Back to Group</a>
+                    <input type="text" id="test-title-input" class="test-title-input" placeholder="Enter Test Title..." value="Untitled Test">
+                </div>
+                <div class="editor-actions">
+                    <span class="status-badge" id="test-status-badge">Draft</span>
+                    <button class="btn-primary" id="review-btn">Review & Finalize</button>
+                </div>
+            </div>
+
+            <!-- Question Builder -->
+            <div class="question-builder" id="question-builder">
+                <!-- Question cards will be dynamically inserted here by JavaScript -->
+            </div>
+
+            <div class="add-question-container">
+                <button class="btn-secondary" id="add-question-btn">+ Add Another Question</button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Test Summary Modal (hidden by default) -->
+    <div class="modal-overlay" id="summary-modal-overlay">
+        <div class="summary-modal-container">
+            <div class="summary-modal-header">
+                <h2>Test Summary & Finalization</h2>
+                <button class="modal-close" id="summary-modal-close">&times;</button>
+            </div>
+            <div class="summary-modal-content">
+                <div class="summary-item">
+                    <label>Test Title</label>
+                    <p id="summary-title"></p>
+                </div>
+                <div class="summary-item">
+                    <label for="summary-description">Test Description / Instructions</label>
+                    <textarea id="summary-description" class="neu-input" rows="4" placeholder="e.g., This test covers chapters 1-5. You will have 30 minutes to complete it."></textarea>
+                </div>
+                 <div class="summary-item">
+                    <label>Direct Test Code (Auto-Generated)</label>
+                    <p class="summary-code" id="summary-test-code"></p>
+                </div>
+                <div class="summary-details">
+                    <div class="summary-detail-item">
+                        <label>Total Questions</label>
+                        <p id="summary-questions"></p>
+                    </div>
+                     <div class="summary-detail-item">
+                        <label>Total Marks</label>
+                        <p id="summary-marks"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="summary-modal-actions">
+                <button class="btn-secondary" id="save-draft-btn">Save as Draft</button>
+                <button class="btn-primary" id="publish-btn">Publish Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/create-test.js" type="module"></script>
+</body>
+
+</html>
+

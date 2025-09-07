@@ -1,0 +1,186 @@
+
+.editor-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.test-title-input {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 0.5rem 0;
+}
+.test-title-input:focus {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.editor-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.status-badge {
+    background: var(--card-bg);
+    box-shadow: var(--shadow-neumorphic-inset);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.question-builder {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.question-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-neumorphic);
+    padding: 2rem;
+    position: relative;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.question-header h3 {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.delete-question-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+.delete-question-btn:hover {
+    color: #ef4444; /* red */
+}
+
+.question-body textarea {
+    width: 100%;
+    min-height: 80px;
+    margin-bottom: 1.5rem;
+    resize: vertical;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+@media (min-width: 768px) {
+    .options-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.option-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.option-input-group input[type="radio"] {
+    flex-shrink: 0;
+    accent-color: var(--primary-color);
+}
+
+.question-footer {
+    display: flex;
+    gap: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.mark-input-group {
+    display: flex;
+    flex-direction: column;
+}
+.mark-input-group label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+.mark-input-group input {
+    width: 100px;
+}
+
+.add-question-container {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+
+/* SUMMARY MODAL STYLES */
+#summary-modal-overlay {
+    /* Uses .modal-overlay styles from main.css */
+}
+.summary-modal-container {
+    background: var(--bg-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-neumorphic);
+    width: 90%;
+    max-width: 600px;
+    padding: 2rem;
+}
+.summary-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+.summary-modal-header h2 {
+    color: var(--text-primary);
+}
+.summary-item {
+    margin-bottom: 1.5rem;
+}
+.summary-item label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.summary-item p {
+    font-size: 1.125rem;
+}
+.summary-code {
+    font-family: monospace;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+.summary-details {
+    display: flex;
+    gap: 2rem;
+}
+.summary-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
