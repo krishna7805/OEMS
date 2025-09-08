@@ -8,8 +8,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Shared Dashboard Styles -->
     <link rel="stylesheet" href="assets/css/dashboard.css">
+    <!-- Page-Specific Styles -->
     <link rel="stylesheet" href="assets/css/group.css">
 </head>
 
@@ -28,23 +31,27 @@
     </header>
 
     <main class="dashboard-main">
-        <div class="container">
+        <div class="container page-content">
             <!-- Group Header -->
             <div class="group-header fade-in">
-                <div class="group-info">
+                <div class="group-info-main">
                     <a href="dashboard.html" class="back-link">&larr; Back to Dashboard</a>
                     <h1 id="group-name">Loading Group...</h1>
-                    <p class="group-code-display">Group Code: <span id="group-code">...</span></p>
                 </div>
-                <div id="owner-actions" style="display: none;">
-                    <button class="btn-primary" id="create-test-btn">+ Create New Test</button>
+                <div class="group-meta">
+                    <div class="group-code-wrapper">
+                        Group Code: <span id="group-code" class="group-code-value">...</span>
+                    </div>
+                    <div id="owner-actions" style="display: none;">
+                        <button class="btn-primary" id="create-test-btn">+ Create New Test</button>
+                    </div>
                 </div>
             </div>
 
             <!-- Main Content Grid -->
-            <div class="group-content-grid">
+            <div class="group-layout">
                 <!-- Left Column: Tests -->
-                <div class="tests-section">
+                <div class="main-column">
                     <h2>Tests</h2>
                     <div id="tests-list" class="item-grid">
                         <p id="no-tests-message">No tests have been created for this group yet.</p>
@@ -53,18 +60,21 @@
                 </div>
 
                 <!-- Right Column: Members -->
-                <div class="members-section">
-                    <h2>Members</h2>
-                    <ul id="members-list" class="item-list">
-                       <p id="no-members-message">Loading members...</p>
-                        <!-- Member list items will be inserted here by JavaScript -->
-                    </ul>
+                <div class="sidebar-column">
+                    <div class="members-card">
+                        <h2>Members</h2>
+                        <ul id="members-list" class="members-list-container">
+                           <p id="no-members-message">Loading members...</p>
+                            <!-- Member list items will be inserted here by JavaScript -->
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
     <script src="assets/js/group.js" type="module"></script>
+    
 </body>
 
 </html>

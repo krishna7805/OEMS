@@ -48,11 +48,13 @@
                 <!-- Question cards will be dynamically inserted here by JavaScript -->
             </div>
 
-            <div class="add-question-container">
-                <button class="btn-secondary" id="add-question-btn">+ Add Another Question</button>
-            </div>
         </div>
     </main>
+
+    <!-- Floating Action Button to Add Question -->
+    <button id="add-question-fab" class="fab" title="Add New Question">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
     
     <!-- Test Summary Modal (hidden by default) -->
     <div class="modal-overlay" id="summary-modal-overlay">
@@ -68,7 +70,15 @@
                 </div>
                 <div class="summary-item">
                     <label for="summary-description">Test Description / Instructions</label>
-                    <textarea id="summary-description" class="neu-input" rows="4" placeholder="e.g., This test covers chapters 1-5. You will have 30 minutes to complete it."></textarea>
+                    <div class="rich-text-editor">
+                        <div class="toolbar" id="summary-toolbar">
+                            <button data-command="bold"><b>B</b></button>
+                            <button data-command="italic"><i>I</i></button>
+                            <button data-command="underline"><u>U</u></button>
+                            <button data-command="insertUnorderedList">●</button>
+                        </div>
+                        <div id="summary-description" class="neu-input editable-div" contenteditable="true" placeholder="e.g., This test covers chapters 1-5. You will have 30 minutes to complete it."></div>
+                    </div>
                 </div>
                  <div class="summary-item">
                     <label>Direct Test Code (Auto-Generated)</label>
@@ -84,10 +94,27 @@
                         <p id="summary-marks"></p>
                     </div>
                 </div>
+                <div class="summary-item">
+                    <div class="toggle-switch-container">
+                        <label for="shuffle-questions-toggle">Shuffle Questions</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="shuffle-questions-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
             </div>
             <div class="summary-modal-actions">
                 <button class="btn-secondary" id="save-draft-btn">Save as Draft</button>
-                <button class="btn-primary" id="publish-btn">Publish Test</button>
+                <div class="split-button">
+                    <button class="btn-primary" id="publish-btn">Publish Now</button>
+                    <button class="btn-primary split-arrow" id="schedule-btn-toggle">▼</button>
+                </div>
+            </div>
+            <div class="schedule-container" id="schedule-container">
+                <label for="schedule-datetime">Publish on:</label>
+                <input type="datetime-local" id="schedule-datetime" class="neu-input">
+                <button class="btn-primary" id="schedule-btn">Schedule Publish</button>
             </div>
         </div>
     </div>
@@ -96,4 +123,3 @@
 </body>
 
 </html>
-

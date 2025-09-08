@@ -1,4 +1,11 @@
+/*
+================================================
+CREATE TEST PAGE STYLES
+File: assets/css/create-test.css
+================================================
+*/
 
+/* --- Editor Header & Layout --- */
 .editor-header {
     display: flex;
     flex-wrap: wrap;
@@ -19,6 +26,7 @@
     outline: none;
     width: 100%;
     padding: 0.5rem 0;
+    transition: border-bottom 0.3s;
 }
 .test-title-input:focus {
     border-bottom: 2px solid var(--primary-color);
@@ -40,10 +48,35 @@
     font-size: 0.875rem;
 }
 
+/* --- Floating Action Button --- */
+.fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: transform 0.2s ease-out;
+}
+.fab:hover {
+    transform: scale(1.05);
+}
+
+/* --- Question Builder & Card --- */
 .question-builder {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    padding-bottom: 80px; /* Space for FAB */
 }
 
 .question-card {
@@ -52,6 +85,10 @@
     box-shadow: var(--shadow-neumorphic);
     padding: 2rem;
     position: relative;
+    transition: box-shadow 0.3s;
+}
+.question-card.focused {
+    box-shadow: 0 0 0 2px var(--primary-color), var(--shadow-neumorphic-hover);
 }
 
 .question-header {
@@ -59,88 +96,166 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    gap: 1rem;
 }
 
 .question-header h3 {
     font-size: 1.25rem;
     color: var(--text-primary);
+    flex-shrink: 0;
 }
 
-.delete-question-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-}
-.delete-question-btn:hover {
-    color: #ef4444; /* red */
+.question-type-select {
+    flex-grow: 1;
+    max-width: 200px;
 }
 
-.question-body textarea {
+.question-body textarea.question-text {
     width: 100%;
     min-height: 80px;
     margin-bottom: 1.5rem;
     resize: vertical;
+    font-size: 1.1rem;
 }
 
-.options-grid {
-    display: grid;
-    grid-template-columns: 1fr;
+/* Multiple Choice & Short Answer Options */
+.mc-options-list, .sa-answers-list {
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-@media (min-width: 768px) {
-    .options-grid {
-        grid-template-columns: 1fr 1fr;
-    }
+    margin-bottom: 1rem;
 }
 
-.option-input-group {
+.option-row, .answer-row {
     display: flex;
     align-items: center;
     gap: 0.75rem;
 }
-.option-input-group input[type="radio"] {
+.option-row input[type="radio"] {
     flex-shrink: 0;
     accent-color: var(--primary-color);
+    width: 20px;
+    height: 20px;
+}
+.option-row input[type="text"], .answer-row input[type="text"] {
+    flex-grow: 1;
 }
 
+.remove-option-btn, .remove-answer-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+.remove-option-btn:hover, .remove-answer-btn:hover {
+    color: #ef4444; /* red */
+}
+
+.add-option-btn, .add-answer-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+/* Question Footer */
 .question-footer {
     display: flex;
-    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
 }
 
-.mark-input-group {
+.footer-actions {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
-.mark-input-group label {
-    font-size: 0.875rem;
+
+.footer-actions .btn-icon {
+    background: var(--card-bg);
+    border-radius: 50%;
+    border: none;
+    box-shadow: var(--shadow-neumorphic-small);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
     color: var(--text-muted);
-    margin-bottom: 0.5rem;
 }
-.mark-input-group input {
-    width: 100px;
+.footer-actions .btn-icon:hover {
+    color: var(--primary-color);
 }
-
-.add-question-container {
-    text-align: center;
-    margin-top: 2rem;
+.footer-actions .btn-icon.delete:hover {
+    color: #ef4444;
 }
 
-
-/* SUMMARY MODAL STYLES */
-#summary-modal-overlay {
-    /* Uses .modal-overlay styles from main.css */
+/* Toggle Switch (used multiple times) */
+.toggle-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-color);
+    box-shadow: var(--shadow-neumorphic-inset);
+    transition: .4s;
+    border-radius: 28px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    box-shadow: var(--shadow-neumorphic-small);
+    transition: .4s;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: var(--primary-color);
+    box-shadow: none;
+}
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+/* --- Summary Modal & Rich Text --- */
 .summary-modal-container {
     background: var(--bg-color);
     border-radius: var(--radius);
     box-shadow: var(--shadow-neumorphic);
     width: 90%;
-    max-width: 600px;
+    max-width: 700px;
     padding: 2rem;
 }
 .summary-modal-header {
@@ -151,31 +266,21 @@
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 1.5rem;
 }
-.summary-modal-header h2 {
-    color: var(--text-primary);
-}
-.summary-item {
-    margin-bottom: 1.5rem;
-}
+.summary-item { margin-bottom: 1.5rem; }
 .summary-item label {
     font-weight: 500;
     color: var(--text-secondary);
     display: block;
     margin-bottom: 0.5rem;
 }
-.summary-item p {
-    font-size: 1.125rem;
-}
+.summary-item p { font-size: 1.125rem; margin: 0; }
 .summary-code {
     font-family: monospace;
     font-weight: 600;
     font-size: 1.25rem;
     color: var(--primary-color);
 }
-.summary-details {
-    display: flex;
-    gap: 2rem;
-}
+.summary-details { display: flex; gap: 2rem; }
 .summary-modal-actions {
     display: flex;
     justify-content: flex-end;
@@ -183,4 +288,59 @@
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
+}
+
+/* Rich Text Editor */
+.rich-text-editor .toolbar {
+    background: var(--card-bg);
+    padding: 0.5rem;
+    border-radius: var(--radius) var(--radius) 0 0;
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+}
+.rich-text-editor .toolbar button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+}
+.editable-div {
+    min-height: 120px;
+    padding: 1rem;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.editable-div:empty:before {
+    content: attr(placeholder);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* Split Button & Schedule Container */
+.split-button {
+    display: flex;
+}
+.split-button .btn-primary:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.split-button .split-arrow {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 1px solid rgba(255,255,255,0.2);
+    padding: 0 0.75rem;
+}
+
+.schedule-container {
+    display: none; /* Hidden by default */
+    padding: 1rem;
+    margin-top: 1rem;
+    background: var(--bg-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-neumorphic-inset);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
