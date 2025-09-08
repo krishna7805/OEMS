@@ -35,7 +35,7 @@ body {
     color: var(--text-secondary);
 }
 
-.btn-secondary {
+.btn-secondary, .copy-code-btn{
     background: var(--bg-color);
     color: var(--text-muted);
     box-shadow: var(--shadow-neumorphic-small);

@@ -344,3 +344,222 @@ input:checked + .slider:before {
     align-items: center;
     gap: 1rem;
 }
+/* Publish Dropdown Styles */
+.publish-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.publish-main {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.publish-main:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.dropdown-arrow {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.publish-dropdown.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.publish-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.publish-dropdown.active .publish-dropdown-menu,
+.publish-dropdown:hover .publish-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: none;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.dropdown-item:hover {
+    background: var(--hover-bg, rgba(102, 126, 234, 0.1));
+    color: var(--primary-color);
+}
+
+.dropdown-item:first-child {
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.dropdown-item:last-child {
+    border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.dropdown-item svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    flex-shrink: 0;
+}
+
+/* Schedule Container */
+.schedule-container {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-neumorphic-small);
+    animation: slideDown 0.3s ease;
+}
+
+.schedule-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.schedule-content label {
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.schedule-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .summary-modal-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .publish-dropdown-menu {
+        right: 0;
+        left: 0;
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .publish-main {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .schedule-content {
+        gap: 0.75rem;
+    }
+    
+    .schedule-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .dropdown-item {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .publish-main {
+        padding: 0.875rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .dropdown-item {
+        padding: 0.875rem;
+        font-size: 0.9rem;
+    }
+    
+    .schedule-container {
+        padding: 1rem;
+    }
+    
+    .summary-modal-actions {
+        gap: 0.5rem;
+    }
+}
+
+/* Touch devices - larger touch targets */
+@media (hover: none) and (pointer: coarse) {
+    .dropdown-item {
+        padding: 1.125rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .publish-main {
+        padding: 1rem;
+    }
+}
+
+/* Modal responsiveness */
+@media (max-width: 768px) {
+    .summary-modal-container {
+        margin: 1rem;
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+    }
+    
+    .summary-modal-content {
+        padding: 1rem;
+    }
+}

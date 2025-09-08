@@ -20,7 +20,10 @@
     <header class="dashboard-header">
         <div class="container">
             <div class="header-content">
-                <a href="dashboard.html" class="brand-text-link">ExamPlatform</a>
+                <div class="nav-brand">
+                    <!-- <span class="brand-text">ExamPlatform</span> -->
+                     <img src="assets/images/OEMSLogo.png" alt="OEMSLogo" style="height: 3rem;">
+                </div>
                 <div class="user-menu">
                     <span id="user-display-name">Loading...</span>
                     <button class="btn-secondary" id="logout-btn">Logout</button>
@@ -65,8 +68,8 @@
             </div>
             <div class="summary-modal-content">
                 <div class="summary-item">
-                    <label>Test Title</label>
-                    <p id="summary-title"></p>
+                    <label for="summary-title-input">Test Title</label>
+                    <input type="text" id="summary-title-input" class="neu-input" placeholder="Enter test title">
                 </div>
                 <div class="summary-item">
                     <label for="summary-description">Test Description / Instructions</label>
@@ -80,7 +83,7 @@
                         <div id="summary-description" class="neu-input editable-div" contenteditable="true" placeholder="e.g., This test covers chapters 1-5. You will have 30 minutes to complete it."></div>
                     </div>
                 </div>
-                 <div class="summary-item">
+                <div class="summary-item">
                     <label>Direct Test Code (Auto-Generated)</label>
                     <p class="summary-code" id="summary-test-code"></p>
                 </div>
@@ -89,7 +92,7 @@
                         <label>Total Questions</label>
                         <p id="summary-questions"></p>
                     </div>
-                     <div class="summary-detail-item">
+                    <div class="summary-detail-item">
                         <label>Total Marks</label>
                         <p id="summary-marks"></p>
                     </div>
@@ -105,18 +108,47 @@
                 </div>
             </div>
             <div class="summary-modal-actions">
+                <button class="btn-secondary" id="back-to-editing-btn">← Back to Editing</button>
                 <button class="btn-secondary" id="save-draft-btn">Save as Draft</button>
-                <div class="split-button">
-                    <button class="btn-primary" id="publish-btn">Publish Now</button>
-                    <button class="btn-primary split-arrow" id="schedule-btn-toggle">▼</button>
+                <div class="publish-dropdown" id="publish-dropdown">
+                    <button class="btn-primary publish-main" id="publish-main-btn">
+                        <span>Publish</span>
+                        <svg class="dropdown-arrow" viewBox="0 0 24 24" width="16" height="16">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="publish-dropdown-menu" id="publish-dropdown-menu">
+                        <button class="dropdown-item" id="publish-now-btn">
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                            Publish Now
+                        </button>
+                        <button class="dropdown-item" id="schedule-publish-btn">
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            Schedule Publish
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="schedule-container" id="schedule-container">
-                <label for="schedule-datetime">Publish on:</label>
-                <input type="datetime-local" id="schedule-datetime" class="neu-input">
-                <button class="btn-primary" id="schedule-btn">Schedule Publish</button>
+            
+            <!-- Schedule container (hidden by default) -->
+            <div class="schedule-container" id="schedule-container" style="display: none;">
+                <div class="schedule-content">
+                    <label for="schedule-datetime">Publish on:</label>
+                    <input type="datetime-local" id="schedule-datetime" class="neu-input">
+                    <div class="schedule-actions">
+                        <button class="btn-secondary" id="cancel-schedule-btn">Cancel</button>
+                        <button class="btn-primary" id="confirm-schedule-btn">Schedule Publish</button>
+                    </div>
+                </div>
             </div>
-        </div>
     </div>
 
     <script src="assets/js/create-test.js" type="module"></script>

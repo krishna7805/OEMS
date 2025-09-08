@@ -27,24 +27,73 @@ const addQuestionFab = document.getElementById('add-question-fab');
 // Modal Elements
 const summaryModal = document.getElementById('summary-modal-overlay');
 const summaryModalClose = document.getElementById('summary-modal-close');
-const summaryTitle = document.getElementById('summary-title');
+const summaryTitleInput = document.getElementById('summary-title-input');
 const summaryDescription = document.getElementById('summary-description');
 const summaryToolbar = document.getElementById('summary-toolbar');
 const summaryTestCode = document.getElementById('summary-test-code');
 const summaryQuestions = document.getElementById('summary-questions');
 const summaryMarks = document.getElementById('summary-marks');
 const shuffleToggle = document.getElementById('shuffle-questions-toggle');
+const backToEditingBtn = document.getElementById('back-to-editing-btn');
 const saveDraftBtn = document.getElementById('save-draft-btn');
-const publishBtn = document.getElementById('publish-btn');
-const scheduleBtnToggle = document.getElementById('schedule-btn-toggle');
+
+// New Publish Dropdown Elements
+const publishMainBtn = document.getElementById('publish-main-btn');
+const publishDropdown = document.getElementById('publish-dropdown');
+const publishDropdownMenu = document.getElementById('publish-dropdown-menu');
+const publishNowBtn = document.getElementById('publish-now-btn');
+const schedulePublishBtn = document.getElementById('schedule-publish-btn');
 const scheduleContainer = document.getElementById('schedule-container');
 const scheduleDateTimeInput = document.getElementById('schedule-datetime');
-const scheduleBtn = document.getElementById('schedule-btn');
+const confirmScheduleBtn = document.getElementById('confirm-schedule-btn');
+const cancelScheduleBtn = document.getElementById('cancel-schedule-btn');
 
 // --- STATE MANAGEMENT ---
 let currentUser, testId, groupId;
 let testState = { questions: new Map() };
 let debounceTimer;
+
+// --- UTILITY FUNCTIONS ---
+function escapeHtml(str) {
+    if (typeof str !== 'string') return '';
+    const p = document.createElement("p");
+    p.textContent = str;
+    return p.innerHTML;
+}
+
+// Dropdown Management Functions
+function openPublishDropdown() {
+    if (publishDropdown) {
+        publishDropdown.classList.add('active');
+        document.addEventListener('click', handleClickOutside);
+    }
+}
+
+function closePublishDropdown() {
+    if (publishDropdown) {
+        publishDropdown.classList.remove('active');
+        document.removeEventListener('click', handleClickOutside);
+    }
+}
+
+function handleClickOutside(event) {
+    if (publishDropdown && !publishDropdown.contains(event.target)) {
+        closePublishDropdown();
+    }
+}
+
+function showScheduleContainer() {
+    if (scheduleContainer) {
+        scheduleContainer.style.display = 'block';
+        closePublishDropdown();
+    }
+}
+
+function hideScheduleContainer() {
+    if (scheduleContainer) {
+        scheduleContainer.style.display = 'none';
+    }
+}
 
 // --- INITIALIZATION & SECURITY ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -79,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (backToGroupLink) {
-        backToGroupLink.href = `groups.html?id=${groupId}`;
+        backToGroupLink.href = `group.html?id=${groupId}`;
     }
 
     onAuthStateChanged(auth, async (user) => {
@@ -113,7 +162,7 @@ async function checkPermissionsAndLoadData() {
         const groupDoc = await getDoc(groupRef);
         if (!groupDoc.exists() || groupDoc.data().ownerId !== currentUser.uid) {
             alert("You are not authorized to edit tests in this group.");
-            window.location.href = `groups.html?id=${groupId}`;
+            window.location.href = `group.html?id=${groupId}`;
             return;
         }
         await loadTestData();
@@ -129,7 +178,7 @@ async function loadTestData() {
         const testDoc = await getDoc(testRef);
         if (!testDoc.exists()) {
             alert("Test not found.");
-            window.location.href = `groups.html?id=${groupId}`;
+            window.location.href = `group.html?id=${groupId}`;
             return;
         }
         
@@ -187,19 +236,19 @@ function renderQuestionCard(question) {
             <div class="option-row">
                 <input type="radio" name="correct-option-${question.id}" value="${i}" ${question.correctAnswerIndex === i ? 'checked' : ''}>
                 <input type="text" class="neu-input option-text" placeholder="Option ${i + 1}" value="${escapeHtml(opt)}">
-                ${options.length > 2 ? '<button class="remove-option-btn" title="Remove Option">&times;</button>' : ''}
+                ${options.length > 2 ? '<button type="button" class="remove-option-btn" title="Remove Option">&times;</button>' : ''}
             </div>
         `).join('');
-        questionBodyHTML = `<div class="mc-options-list">${optionsHTML}</div><button class="add-option-btn">+ Add Option</button>`;
+        questionBodyHTML = `<div class="mc-options-list">${optionsHTML}</div><button type="button" class="add-option-btn">+ Add Option</button>`;
     } else if (question.questionType === 'short-answer') {
         const answers = question.validAnswers || [''];
-        const answersHTML = answers.map(ans => `
+        const answersHTML = answers.map((ans, i) => `
             <div class="answer-row">
-                <input type="text" class="neu-input answer-text" placeholder="Valid Answer" value="${escapeHtml(ans)}">
-                <button class="remove-answer-btn" title="Remove Answer">&times;</button>
+                <input type="text" class="neu-input answer-text" placeholder="Valid Answer ${i + 1}" value="${escapeHtml(ans)}">
+                ${answers.length > 1 ? '<button type="button" class="remove-answer-btn" title="Remove Answer">&times;</button>' : ''}
             </div>
         `).join('');
-        questionBodyHTML = `<div class="sa-answers-list">${answersHTML}</div><button class="add-answer-btn">+ Add another valid answer</button>`;
+        questionBodyHTML = `<div class="sa-answers-list">${answersHTML}</div><button type="button" class="add-answer-btn">+ Add another valid answer</button>`;
     }
 
     card.innerHTML = `
@@ -225,15 +274,52 @@ function renderQuestionCard(question) {
                 </div>
             </div>
             <div class="footer-actions">
-                <button class="btn-icon move-up" title="Move Up">▲</button>
-                <button class="btn-icon move-down" title="Move Down">▼</button>
-                <button class="btn-icon delete" title="Delete Question">
+                <button type="button" class="btn-icon move-up" title="Move Up">▲</button>
+                <button type="button" class="btn-icon move-down" title="Move Down">▼</button>
+                <button type="button" class="btn-icon delete" title="Delete Question">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
             </div>
         </div>
     `;
     questionBuilder.appendChild(card);
+}
+
+// Handle question type change
+function handleQuestionTypeChange(card, newType) {
+    const questionId = card.dataset.questionId;
+    const question = testState.questions.get(questionId);
+    if (!question) return;
+
+    question.questionType = newType;
+    
+    const specificBody = card.querySelector('.question-specific-body');
+    if (!specificBody) return;
+
+    let bodyHTML = '';
+    if (newType === 'multiple-choice') {
+        const options = question.options || ['', ''];
+        const optionsHTML = options.map((opt, i) => `
+            <div class="option-row">
+                <input type="radio" name="correct-option-${questionId}" value="${i}" ${question.correctAnswerIndex === i ? 'checked' : ''}>
+                <input type="text" class="neu-input option-text" placeholder="Option ${i + 1}" value="${escapeHtml(opt)}">
+                ${options.length > 2 ? '<button type="button" class="remove-option-btn" title="Remove Option">&times;</button>' : ''}
+            </div>
+        `).join('');
+        bodyHTML = `<div class="mc-options-list">${optionsHTML}</div><button type="button" class="add-option-btn">+ Add Option</button>`;
+    } else if (newType === 'short-answer') {
+        const answers = question.validAnswers || [''];
+        const answersHTML = answers.map((ans, i) => `
+            <div class="answer-row">
+                <input type="text" class="neu-input answer-text" placeholder="Valid Answer ${i + 1}" value="${escapeHtml(ans)}">
+                ${answers.length > 1 ? '<button type="button" class="remove-answer-btn" title="Remove Answer">&times;</button>' : ''}
+            </div>
+        `).join('');
+        bodyHTML = `<div class="sa-answers-list">${answersHTML}</div><button type="button" class="add-answer-btn">+ Add another valid answer</button>`;
+    }
+    
+    specificBody.innerHTML = bodyHTML;
+    saveQuestionState(card);
 }
 
 async function addQuestion() {
@@ -366,7 +452,7 @@ async function openSummaryModal() {
         let totalMarks = 0;
         testState.questions.forEach(q => { totalMarks += (q.marks || 1); });
 
-        if (summaryTitle) summaryTitle.textContent = testState.title;
+        if (summaryTitleInput) summaryTitleInput.value = testState.title || 'Untitled Test';
         if (summaryDescription) summaryDescription.innerHTML = testState.description || '';
         if (summaryTestCode) summaryTestCode.textContent = testState.testCode || 'Will be generated on publish';
         if (summaryQuestions) summaryQuestions.textContent = testState.questions.size;
@@ -380,8 +466,22 @@ async function openSummaryModal() {
     }
 }
 
+function closeSummaryModal() {
+    if (summaryModal) {
+        summaryModal.classList.remove('active');
+    }
+}
+
 async function finalizeTest(status, scheduledTime = null) {
     try {
+        // Update title from summary modal
+        if (summaryTitleInput && summaryTitleInput.value.trim()) {
+            testState.title = summaryTitleInput.value.trim();
+            if (testTitleInput) {
+                testTitleInput.value = testState.title;
+            }
+        }
+
         const testRef = doc(db, "tests", testId);
         
         let testCode = testState.testCode;
@@ -405,7 +505,7 @@ async function finalizeTest(status, scheduledTime = null) {
 
         await updateDoc(testRef, finalData);
         alert(`Test successfully ${status === 'published' ? 'published' : (status === 'scheduled' ? 'scheduled' : 'saved')}!`);
-        window.location.href = `groups.html?id=${groupId}`;
+        window.location.href = `group.html?id=${groupId}`;
     } catch (error) {
         console.error("Error finalizing test:", error);
         alert("Failed to finalize test.");
@@ -426,9 +526,11 @@ function addEventListeners() {
     }
     
     if (summaryModalClose) {
-        summaryModalClose.addEventListener('click', () => {
-            if (summaryModal) summaryModal.classList.remove('active');
-        });
+        summaryModalClose.addEventListener('click', closeSummaryModal);
+    }
+    
+    if (backToEditingBtn) {
+        backToEditingBtn.addEventListener('click', closeSummaryModal);
     }
     
     if (testTitleInput) {
@@ -438,6 +540,81 @@ function addEventListeners() {
         });
     }
 
+    // Publish dropdown event listeners
+    if (publishMainBtn) {
+        publishMainBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (publishDropdown && publishDropdown.classList.contains('active')) {
+                closePublishDropdown();
+            } else {
+                openPublishDropdown();
+            }
+        });
+        
+        // Also show on hover for desktop
+        if (publishDropdown) {
+            publishDropdown.addEventListener('mouseenter', () => {
+                if (window.innerWidth > 768) { // Only on desktop
+                    openPublishDropdown();
+                }
+            });
+            
+            publishDropdown.addEventListener('mouseleave', () => {
+                if (window.innerWidth > 768) { // Only on desktop
+                    setTimeout(() => {
+                        if (!publishDropdown.matches(':hover')) {
+                            closePublishDropdown();
+                        }
+                    }, 300);
+                }
+            });
+        }
+    }
+    
+    if (publishNowBtn) {
+        publishNowBtn.addEventListener('click', () => {
+            closePublishDropdown();
+            finalizeTest('published');
+        });
+    }
+    
+    if (schedulePublishBtn) {
+        schedulePublishBtn.addEventListener('click', () => {
+            showScheduleContainer();
+        });
+    }
+    
+    if (confirmScheduleBtn) {
+        confirmScheduleBtn.addEventListener('click', () => {
+            if (scheduleDateTimeInput) {
+                const scheduledTime = new Date(scheduleDateTimeInput.value);
+                if (isNaN(scheduledTime)) {
+                    alert("Please select a valid date and time.");
+                    return;
+                }
+                if (scheduledTime <= new Date()) {
+                    alert("Please select a future date and time.");
+                    return;
+                }
+                finalizeTest('scheduled', scheduledTime);
+            }
+        });
+    }
+    
+    if (cancelScheduleBtn) {
+        cancelScheduleBtn.addEventListener('click', () => {
+            hideScheduleContainer();
+            if (scheduleDateTimeInput) {
+                scheduleDateTimeInput.value = '';
+            }
+        });
+    }
+
+    if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', () => finalizeTest('draft'));
+    }
+
+    // Question builder event listeners
     if (questionBuilder) {
         questionBuilder.addEventListener('input', handleAutosave);
         questionBuilder.addEventListener('change', handleAutosave);
@@ -450,32 +627,46 @@ function addEventListeners() {
 
             if (target.closest('.delete')) {
                 deleteQuestion(questionId);
+            } else if (target.classList.contains('add-option-btn')) {
+                const question = testState.questions.get(questionId);
+                if (question && question.questionType === 'multiple-choice') {
+                    question.options = question.options || [];
+                    question.options.push('');
+                    handleQuestionTypeChange(card, 'multiple-choice');
+                }
+            } else if (target.classList.contains('remove-option-btn')) {
+                const optionRow = target.closest('.option-row');
+                const question = testState.questions.get(questionId);
+                if (question && optionRow) {
+                    const optionIndex = Array.from(optionRow.parentNode.children).indexOf(optionRow);
+                    question.options.splice(optionIndex, 1);
+                    handleQuestionTypeChange(card, 'multiple-choice');
+                }
+            } else if (target.classList.contains('add-answer-btn')) {
+                const question = testState.questions.get(questionId);
+                if (question && question.questionType === 'short-answer') {
+                    question.validAnswers = question.validAnswers || [];
+                    question.validAnswers.push('');
+                    handleQuestionTypeChange(card, 'short-answer');
+                }
+            } else if (target.classList.contains('remove-answer-btn')) {
+                const answerRow = target.closest('.answer-row');
+                const question = testState.questions.get(questionId);
+                if (question && answerRow) {
+                    const answerIndex = Array.from(answerRow.parentNode.children).indexOf(answerRow);
+                    question.validAnswers.splice(answerIndex, 1);
+                    handleQuestionTypeChange(card, 'short-answer');
+                }
             }
         });
-    }
 
-    if (saveDraftBtn) {
-        saveDraftBtn.addEventListener('click', () => finalizeTest('draft'));
-    }
-    
-    if (publishBtn) {
-        publishBtn.addEventListener('click', () => finalizeTest('published'));
-    }
-    
-    if (scheduleBtnToggle) {
-        scheduleBtnToggle.addEventListener('click', () => {
-            if (scheduleContainer) {
-                scheduleContainer.style.display = scheduleContainer.style.display === 'flex' ? 'none' : 'flex';
-            }
-        });
-    }
-    
-    if (scheduleBtn) {
-        scheduleBtn.addEventListener('click', () => {
-            if (scheduleDateTimeInput) {
-                const scheduledTime = new Date(scheduleDateTimeInput.value);
-                if (isNaN(scheduledTime)) return alert("Invalid date/time format.");
-                finalizeTest('scheduled', scheduledTime);
+        // Handle question type change
+        questionBuilder.addEventListener('change', (e) => {
+            if (e.target.classList.contains('question-type-select')) {
+                const card = e.target.closest('.question-card');
+                if (card) {
+                    handleQuestionTypeChange(card, e.target.value);
+                }
             }
         });
     }
@@ -489,11 +680,4 @@ function addEventListeners() {
             }
         });
     }
-}
-
-function escapeHtml(str) {
-    if (typeof str !== 'string') return '';
-    const p = document.createElement("p");
-    p.textContent = str;
-    return p.innerHTML;
 }

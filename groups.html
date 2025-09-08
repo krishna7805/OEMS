@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Group Details - ExamPlatform</title>
+    <title>Group Details - Online Exam Management System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -21,7 +21,10 @@
     <header class="dashboard-header">
         <div class="container">
             <div class="header-content">
-                <a href="dashboard.html" class="brand-text-link">ExamPlatform</a>
+                <div class="nav-brand">
+                    <!-- <span class="brand-text">ExamPlatform</span> -->
+                     <img src="assets/images/OEMSLogo.png" alt="OEMSLogo" style="height: 3rem;">
+                </div>
                 <div class="user-menu">
                     <span id="user-display-name">Loading...</span>
                     <button class="btn-secondary" id="logout-btn">Logout</button>
@@ -40,7 +43,14 @@
                 </div>
                 <div class="group-meta">
                     <div class="group-code-wrapper">
-                        Group Code: <span id="group-code" class="group-code-value">...</span>
+                        Group Code: 
+                        <span id="group-code" class="group-code-value">...</span>
+                        <button class="copy-code-btn" id="copy-code-btn" title="Copy group code">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
                     </div>
                     <div id="owner-actions" style="display: none;">
                         <button class="btn-primary" id="create-test-btn">+ Create New Test</button>
@@ -55,18 +65,37 @@
                     <h2>Tests</h2>
                     <div id="tests-list" class="item-grid">
                         <p id="no-tests-message">No tests have been created for this group yet.</p>
-                        <!-- Test cards will be dynamically inserted here by JavaScript -->
+                                    <!-- Test cards will be dynamically inserted here by JavaScript -->
                     </div>
                 </div>
 
                 <!-- Right Column: Members -->
                 <div class="sidebar-column">
-                    <div class="members-card">
-                        <h2>Members</h2>
+                    <!-- Owner Controls Card -->
+                    <div class="owner-controls-card" id="owner-controls-card" style="display: none;">
+                        <h3>Privacy Settings</h3>
+                        <div class="toggle-switch-container">
+                            <label for="show-members-toggle">Show members to everyone</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="show-members-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <p class="help-text">When enabled, all group members can see the member list. When disabled, only you can see it.</p>
+                    </div>
+                
+                    <!-- Members Card -->
+                    <div class="members-card" id="members-card" style="display: none;">
+                        <h2>Members <span id="member-count" class="member-count"></span></h2>
                         <ul id="members-list" class="members-list-container">
                            <p id="no-members-message">Loading members...</p>
-                            <!-- Member list items will be inserted here by JavaScript -->
                         </ul>
+                    </div>
+                    
+                    <!-- Info card for non-owners when members are hidden -->
+                    <div class="info-card" id="group-info-card" style="display: none;">
+                        <h3>Group Information</h3>
+                        <p id="info-message">You are a member of this group.</p>
                     </div>
                 </div>
             </div>

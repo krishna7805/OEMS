@@ -9,6 +9,7 @@ import {
   getDocs,
   deleteDoc,
   addDoc,
+  updateDoc,
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -18,7 +19,8 @@ const state = {
   currentUser: null,
   currentGroup: null,
   isOwner: false,
-  isLoading: true
+  isLoading: true,
+  members: new Map()
 };
 
 // --- DOM ELEMENTS ---
@@ -27,12 +29,19 @@ const elements = {
   logoutBtn: document.getElementById('logout-btn'),
   groupName: document.getElementById('group-name'),
   groupCode: document.getElementById('group-code'),
+  copyCodeBtn: document.getElementById('copy-code-btn'),
   ownerActions: document.getElementById('owner-actions'),
   createTestBtn: document.getElementById('create-test-btn'),
   testsList: document.getElementById('tests-list'),
   noTestsMessage: document.getElementById('no-tests-message'),
   membersList: document.getElementById('members-list'),
-  noMembersMessage: document.getElementById('no-members-message')
+  noMembersMessage: document.getElementById('no-members-message'),
+  membersCard: document.getElementById('members-card'),
+  groupInfoCard: document.getElementById('group-info-card'),
+  ownerControlsCard: document.getElementById('owner-controls-card'),
+  showMembersToggle: document.getElementById('show-members-toggle'),
+  memberCount: document.getElementById('member-count'),
+  infoMessage: document.getElementById('info-message')
 };
 
 // --- UTILITY FUNCTIONS ---
@@ -49,6 +58,24 @@ function escapeHtml(str = '') {
 
 function redirect(page) {
   window.location.href = page;
+}
+
+// Copy to clipboard function
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (err) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.select();
+    const success = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    return success;
+  }
 }
 
 // --- CORE APP FUNCTIONS ---
@@ -108,12 +135,11 @@ async function loadGroupData() {
     };
     
     state.isOwner = (state.currentUser.uid === state.currentGroup.ownerId);
-    updateGroupUI();
     
-    await Promise.all([
-      loadTests(),
-      loadMembers()
-    ]);
+    // Load members first, then update UI
+    await loadMembers();
+    updateGroupUI();
+    await loadTests();
     
     state.isLoading = false;
     
@@ -126,6 +152,8 @@ async function loadGroupData() {
 function updateGroupUI() {
   if (!state.currentGroup) return;
   
+  console.log("Updating UI - isOwner:", state.isOwner, "showMembersToAll:", state.currentGroup.showMembersToAll);
+  
   if (elements.groupName) {
     elements.groupName.textContent = escapeHtml(state.currentGroup.name);
   }
@@ -136,6 +164,185 @@ function updateGroupUI() {
   
   if (elements.ownerActions) {
     elements.ownerActions.style.display = state.isOwner ? 'block' : 'none';
+  }
+  
+  // Update member count
+  if (elements.memberCount && state.members.size > 0) {
+    elements.memberCount.textContent = `(${state.members.size})`;
+  }
+  
+  // Show owner controls only to owner
+  if (elements.ownerControlsCard) {
+    elements.ownerControlsCard.style.display = state.isOwner ? 'block' : 'none';
+  }
+  
+  // Set toggle state
+  if (elements.showMembersToggle && state.isOwner) {
+    elements.showMembersToggle.checked = state.currentGroup.showMembersToAll || false;
+  }
+  
+  // Control member list visibility
+  const shouldShowMembers = state.isOwner || state.currentGroup.showMembersToAll;
+  
+  if (elements.membersCard) {
+    elements.membersCard.style.display = shouldShowMembers ? 'block' : 'none';
+  }
+  
+  // Show info card for non-owners based on settings
+  if (elements.groupInfoCard) {
+    if (state.isOwner) {
+      elements.groupInfoCard.style.display = 'none';
+    } else {
+      elements.groupInfoCard.style.display = shouldShowMembers ? 'none' : 'block';
+      if (elements.infoMessage) {
+        if (state.currentGroup.showMembersToAll === false) {
+          elements.infoMessage.textContent = 'You are a member of this group. The group owner has chosen to keep the member list private.';
+        } else {
+          elements.infoMessage.textContent = 'You are a member of this group.';
+        }
+      }
+    }
+  }
+}
+
+async function loadMembers() {
+  try {
+    console.log("Loading members for group:", state.groupId);
+    
+    const ownerId = state.currentGroup.ownerId;
+    if (!ownerId) {
+      throw new Error("Group has no owner ID");
+    }
+    
+    const memberIds = new Set([ownerId]);
+    
+    const membershipsQuery = query(
+      collection(db, 'memberships'), 
+      where('groupId', '==', state.groupId)
+    );
+    
+    const querySnapshot = await getDocs(membershipsQuery);
+    querySnapshot.forEach(doc => {
+      const userId = doc.data().userId;
+      if (userId) memberIds.add(userId);
+    });
+    
+    console.log("Found member IDs:", Array.from(memberIds));
+    
+    if (memberIds.size === 0) {
+      console.log("No members found");
+      if (elements.noMembersMessage) {
+        elements.noMembersMessage.style.display = 'block';
+        elements.noMembersMessage.textContent = 'No members found.';
+      }
+      return;
+    }
+    
+    const memberPromises = Array.from(memberIds).map(uid => 
+      getDoc(doc(db, 'users', uid))
+    );
+    
+    const memberDocs = await Promise.all(memberPromises);
+    
+    // Clear previous members
+    state.members.clear();
+    
+    memberDocs.forEach((userDoc, index) => {
+      if (userDoc.exists()) {
+        const userId = Array.from(memberIds)[index];
+        const userData = userDoc.data();
+        state.members.set(userId, {
+          id: userId,
+          ...userData,
+          isOwner: userId === state.currentGroup.ownerId
+        });
+      }
+    });
+    
+    console.log("Loaded members:", state.members.size);
+    renderMembersList();
+    
+  } catch (error) {
+    console.error("Error loading members:", error);
+    if (elements.noMembersMessage) {
+      elements.noMembersMessage.textContent = "Failed to load members. Please refresh the page.";
+      elements.noMembersMessage.style.display = 'block';
+    }
+  }
+}
+
+function renderMembersList() {
+  if (!elements.membersList) return;
+  
+  console.log("Rendering members list with", state.members.size, "members");
+  
+  elements.membersList.innerHTML = '';
+  
+  if (state.members.size === 0) {
+    if (elements.noMembersMessage) {
+      elements.noMembersMessage.style.display = 'block';
+      elements.noMembersMessage.textContent = 'No members found.';
+    }
+    return;
+  }
+  
+  if (elements.noMembersMessage) {
+    elements.noMembersMessage.style.display = 'none';
+  }
+  
+  // Convert to array and sort (owner first)
+  const membersArray = Array.from(state.members.values());
+  membersArray.sort((a, b) => {
+    if (a.isOwner && !b.isOwner) return -1;
+    if (!a.isOwner && b.isOwner) return 1;
+    return (a.fullName || a.displayName || a.email || '').localeCompare(
+      b.fullName || b.displayName || b.email || ''
+    );
+  });
+  
+  membersArray.forEach(member => {
+    const li = document.createElement('li');
+    li.className = 'member-item';
+    
+    const displayName = member.fullName || member.displayName || member.email || 'User';
+    
+    li.innerHTML = `
+      <div class="member-info">
+        <span class="member-name">${escapeHtml(displayName)}</span>
+        ${member.isOwner ? '<span class="owner-badge">Owner</span>' : ''}
+      </div>
+    `;
+    
+    elements.membersList.appendChild(li);
+  });
+  
+  console.log("Members list rendered successfully");
+}
+
+async function handleMemberVisibilityToggle() {
+  if (!state.isOwner || !state.currentGroup) return;
+  
+  try {
+    const newValue = elements.showMembersToggle.checked;
+    console.log("Updating member visibility to:", newValue);
+    
+    const groupRef = doc(db, 'groups', state.groupId);
+    await updateDoc(groupRef, {
+      showMembersToAll: newValue,
+      updatedAt: serverTimestamp()
+    });
+    
+    state.currentGroup.showMembersToAll = newValue;
+    updateGroupUI();
+    
+  } catch (error) {
+    console.error("Error updating member visibility:", error);
+    alert("Failed to update settings. Please try again.");
+    
+    // Revert toggle
+    if (elements.showMembersToggle) {
+      elements.showMembersToggle.checked = state.currentGroup.showMembersToAll || false;
+    }
   }
 }
 
@@ -212,66 +419,6 @@ function createTestCard(test) {
   return card;
 }
 
-async function loadMembers() {
-  try {
-    const ownerId = state.currentGroup.ownerId;
-    if (!ownerId) {
-      throw new Error("Group has no owner ID");
-    }
-    
-    const memberIds = new Set([ownerId]);
-    
-    const membershipsQuery = query(
-      collection(db, 'memberships'), 
-      where('groupId', '==', state.groupId)
-    );
-    
-    const querySnapshot = await getDocs(membershipsQuery);
-    querySnapshot.forEach(doc => {
-      const userId = doc.data().userId;
-      if (userId) memberIds.add(userId);
-    });
-    
-    if (elements.membersList) {
-      elements.membersList.innerHTML = '';
-      
-      if (memberIds.size === 0) {
-        if (elements.noMembersMessage) {
-          elements.noMembersMessage.style.display = 'block';
-        }
-        return;
-      }
-      
-      if (elements.noMembersMessage) {
-        elements.noMembersMessage.style.display = 'none';
-      }
-      
-      const memberPromises = Array.from(memberIds).map(uid => 
-        getDoc(doc(db, 'users', uid))
-      );
-      
-      const memberDocs = await Promise.all(memberPromises);
-      
-      memberDocs.forEach(userDoc => {
-        if (userDoc.exists()) {
-          const user = userDoc.data();
-          const li = document.createElement('li');
-          li.className = 'member-item';
-          const displayName = user.fullName || user.displayName || user.email || 'User';
-          li.textContent = escapeHtml(displayName);
-          elements.membersList.appendChild(li);
-        }
-      });
-    }
-  } catch (error) {
-    console.error("Error loading members:", error);
-    if (elements.noMembersMessage) {
-      elements.noMembersMessage.textContent = "Failed to load members. Please refresh the page.";
-      elements.noMembersMessage.style.display = 'block';
-    }
-  }
-}
-
 async function handleCreateTest() {
   console.log("Create test button clicked");
   
@@ -315,7 +462,6 @@ async function handleCreateTest() {
     
     console.log("Test created with ID:", newTestRef.id);
     
-    // Store IDs and redirect
     localStorage.setItem('current_edit_test_id', newTestRef.id);
     localStorage.setItem('current_edit_group_id', state.currentGroup.id);
     
@@ -389,6 +535,53 @@ async function deleteTest(testId, cardElement) {
   }
 }
 
+async function handleCopyCode() {
+  if (!state.currentGroup || !state.currentGroup.code) {
+    alert('No group code available to copy.');
+    return;
+  }
+  
+  const success = await copyToClipboard(state.currentGroup.code);
+  
+  if (success) {
+    const originalHtml = elements.copyCodeBtn.innerHTML;
+    elements.copyCodeBtn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20,6 9,17 4,12"></polyline>
+      </svg>
+    `;
+    elements.copyCodeBtn.style.color = 'var(--success-color, #4ade80)';
+    
+    const tempMessage = document.createElement('div');
+    tempMessage.textContent = 'Copied!';
+    tempMessage.style.cssText = `
+      position: absolute;
+      background: var(--success-color, #4ade80);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+    `;
+    
+    elements.copyCodeBtn.style.position = 'relative';
+    elements.copyCodeBtn.appendChild(tempMessage);
+    
+    setTimeout(() => {
+      elements.copyCodeBtn.innerHTML = originalHtml;
+      elements.copyCodeBtn.style.color = '';
+      if (tempMessage.parentNode) {
+        tempMessage.parentNode.removeChild(tempMessage);
+      }
+    }, 2000);
+  } else {
+    alert('Failed to copy group code. Please copy it manually: ' + state.currentGroup.code);
+  }
+}
+
 function setupEventListeners() {
   if (elements.logoutBtn) {
     elements.logoutBtn.addEventListener('click', () => signOut(auth));
@@ -400,6 +593,14 @@ function setupEventListeners() {
   
   if (elements.testsList) {
     elements.testsList.addEventListener('click', handleTestActions);
+  }
+  
+  if (elements.copyCodeBtn) {
+    elements.copyCodeBtn.addEventListener('click', handleCopyCode);
+  }
+  
+  if (elements.showMembersToggle) {
+    elements.showMembersToggle.addEventListener('change', handleMemberVisibilityToggle);
   }
 }
 
