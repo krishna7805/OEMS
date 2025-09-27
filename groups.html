@@ -22,11 +22,19 @@
         <div class="container">
             <div class="header-content">
                 <div class="nav-brand">
-                    <!-- <span class="brand-text">ExamPlatform</span> -->
-                     <img src="assets/images/OEMSLogo.png" alt="OEMSLogo" style="height: 3rem;">
+                    <img src="assets/images/OEMSLogo.png" alt="OEMSLogo" style="height: 3rem;">
                 </div>
                 <div class="user-menu">
                     <span id="user-display-name">Loading...</span>
+                    <button class="btn-secondary" id="manage-members-btn" style="display: none;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        Members
+                    </button>
                     <button class="btn-secondary" id="logout-btn">Logout</button>
                 </div>
             </div>
@@ -101,6 +109,43 @@
             </div>
         </div>
     </main>
+    <div class="modal-overlay" id="member-modal-overlay" style="display: none;">
+        <div class="member-modal">
+            <div class="member-modal-header">
+                <h2>Manage Members</h2>
+                <button class="modal-close-btn" id="member-modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="member-modal-content">
+                <!-- Pending Requests Section -->
+                <div class="member-section">
+                    <div class="section-header">
+                        <h3>Pending Requests</h3>
+                        <span class="request-count" id="request-count">0</span>
+                    </div>
+                    <div class="member-list" id="pending-requests-list">
+                        <div class="no-items-message" id="no-requests-message">No pending requests</div>
+                    </div>
+                </div>
+                
+                <!-- Current Members Section -->
+                <div class="member-section">
+                    <div class="section-header">
+                        <h3>Current Members</h3>
+                        <span class="member-count-modal" id="member-count-modal">0</span>
+                    </div>
+                    <div class="member-list" id="current-members-list">
+                        <div class="no-items-message" id="no-members-modal-message">No members found</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="assets/js/group.js" type="module"></script>
     

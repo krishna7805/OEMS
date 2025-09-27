@@ -387,7 +387,7 @@ input:checked + .slider:before {
 .publish-dropdown-menu {
     position: absolute;
     top: calc(100% + 8px);
-    right: 0;
+    right: 0; /* Keep right-aligned by default */
     background: var(--card-bg);
     border-radius: var(--radius);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
@@ -399,6 +399,7 @@ input:checked + .slider:before {
     z-index: 1000;
     border: 1px solid var(--border-color);
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .publish-dropdown.active .publish-dropdown-menu,
@@ -493,11 +494,12 @@ input:checked + .slider:before {
     }
     
     .publish-dropdown-menu {
-        right: 0;
-        left: 0;
-        min-width: auto;
-        width: 100%;
+        /* Use transform to center the dropdown relative to the button */
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%) translateY(-10px);
     }
+    
     
     .publish-main {
         width: 100%;
@@ -516,6 +518,10 @@ input:checked + .slider:before {
     .dropdown-item {
         padding: 1rem;
         font-size: 1rem;
+    }
+    .publish-dropdown.active .publish-dropdown-menu,
+    .publish-dropdown:hover .publish-dropdown-menu {
+        transform: translateX(-50%) translateY(0);
     }
 }
 
@@ -536,6 +542,41 @@ input:checked + .slider:before {
     
     .summary-modal-actions {
         gap: 0.5rem;
+    }
+
+    .publish-dropdown-menu {
+        left: 0;
+        right: 0;
+        min-width: auto;
+        width: 100%;
+        transform: translateY(-10px);
+    }
+    
+    .publish-dropdown.active .publish-dropdown-menu,
+    .publish-dropdown:hover .publish-dropdown-menu {
+        transform: translateY(0);
+    }
+
+    .summary-modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    }
+    
+    /* Alternative: If you want the dropdown to always appear to the left when near screen edge */
+    .publish-dropdown-menu.align-left {
+        right: auto;
+        left: 0;
+        transform: translateY(-10px);
+    }
+    
+    .publish-dropdown.active .publish-dropdown-menu.align-left {
+        transform: translateY(0);
     }
 }
 

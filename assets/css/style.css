@@ -839,7 +839,7 @@ body {
     background: var(--card-bg);
     border-radius: var(--radius);
     box-shadow: var(--shadow-neumorphic-small);
-    padding: 0.75rem;
+    padding: 0.5rem 0.75rem 0.25rem;
     color: var(--text-secondary);
     text-decoration: none;
     transition: var(--transition-smooth);
@@ -1055,23 +1055,23 @@ body {
 }
 
 .form-input {
-    padding: 1rem 2.5rem 1rem;
+    background: var(--card-bg);
+    border-radius: calc(var(--radius) * 0.75);
+    box-shadow: var(--shadow-neumorphic-inset);
     border: none;
- border-radius: 15px;
-
- background-color: #e8e8e8;
- box-shadow: 6px 6px 12px #ffffff,
-             -6px -6px 12px #c5c5c5;
- font-size: medium;
- font-weight: bold;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    width: 100%;
+    transition: var(--transition-smooth);
+    color: var(--text-primary);
+    font-family: inherit;
 }
-.form-input:focus {
+/* .form-input:focus {
     background-color: white;
     transform: scale(1.05);
     box-shadow: 13px 13px 100px #969696,
                -13px -13px 100px #ffffff;
-               border: 2px solid orange;
-  }
+    border: 2px solid orange;
+  } */
 
 .password-toggle {
     position: absolute;

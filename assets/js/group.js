@@ -20,7 +20,9 @@ const state = {
   currentGroup: null,
   isOwner: false,
   isLoading: true,
-  members: new Map()
+  members: new Map(),
+  pendingRequests: new Map(),
+  activeKebabMenu: null
 };
 
 // --- DOM ELEMENTS ---
@@ -41,7 +43,16 @@ const elements = {
   ownerControlsCard: document.getElementById('owner-controls-card'),
   showMembersToggle: document.getElementById('show-members-toggle'),
   memberCount: document.getElementById('member-count'),
-  infoMessage: document.getElementById('info-message')
+  infoMessage: document.getElementById('info-message'),
+  manageMembersBtn: document.getElementById('manage-members-btn'),
+  memberModalOverlay: document.getElementById('member-modal-overlay'),
+  memberModalClose: document.getElementById('member-modal-close'),
+  pendingRequestsList: document.getElementById('pending-requests-list'),
+  currentMembersList: document.getElementById('current-members-list'),
+  noRequestsMessage: document.getElementById('no-requests-message'),
+  noMembersModalMessage: document.getElementById('no-members-modal-message'),
+  requestCount: document.getElementById('request-count'),
+  memberCountModal: document.getElementById('member-count-modal')
 };
 
 // --- UTILITY FUNCTIONS ---
@@ -58,6 +69,11 @@ function escapeHtml(str = '') {
 
 function redirect(page) {
   window.location.href = page;
+}
+
+function getInitials(name) {
+  if (!name) return '?';
+  return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
 }
 
 // Copy to clipboard function
@@ -166,6 +182,11 @@ function updateGroupUI() {
     elements.ownerActions.style.display = state.isOwner ? 'block' : 'none';
   }
   
+  // Show manage members button only for owner
+  if (elements.manageMembersBtn) {
+    elements.manageMembersBtn.style.display = state.isOwner ? 'inline-flex' : 'none';
+  }
+  
   // Update member count
   if (elements.memberCount && state.members.size > 0) {
     elements.memberCount.textContent = `(${state.members.size})`;
@@ -205,6 +226,7 @@ function updateGroupUI() {
   }
 }
 
+// --- MEMBER MANAGEMENT FUNCTIONS ---
 async function loadMembers() {
   try {
     console.log("Loading members for group:", state.groupId);
@@ -214,50 +236,46 @@ async function loadMembers() {
       throw new Error("Group has no owner ID");
     }
     
-    const memberIds = new Set([ownerId]);
+    // Clear previous members
+    state.members.clear();
     
+    // Get owner info first
+    const ownerDoc = await getDoc(doc(db, 'users', ownerId));
+    if (ownerDoc.exists()) {
+      state.members.set(ownerId, {
+        id: ownerId,
+        ...ownerDoc.data(),
+        isOwner: true,
+        role: 'owner'
+      });
+    }
+    
+    // Get members from memberships collection
     const membershipsQuery = query(
       collection(db, 'memberships'), 
       where('groupId', '==', state.groupId)
     );
     
     const querySnapshot = await getDocs(membershipsQuery);
-    querySnapshot.forEach(doc => {
-      const userId = doc.data().userId;
-      if (userId) memberIds.add(userId);
-    });
     
-    console.log("Found member IDs:", Array.from(memberIds));
-    
-    if (memberIds.size === 0) {
-      console.log("No members found");
-      if (elements.noMembersMessage) {
-        elements.noMembersMessage.style.display = 'block';
-        elements.noMembersMessage.textContent = 'No members found.';
-      }
-      return;
-    }
-    
-    const memberPromises = Array.from(memberIds).map(uid => 
-      getDoc(doc(db, 'users', uid))
-    );
-    
-    const memberDocs = await Promise.all(memberPromises);
-    
-    // Clear previous members
-    state.members.clear();
-    
-    memberDocs.forEach((userDoc, index) => {
-      if (userDoc.exists()) {
-        const userId = Array.from(memberIds)[index];
-        const userData = userDoc.data();
-        state.members.set(userId, {
-          id: userId,
-          ...userData,
-          isOwner: userId === state.currentGroup.ownerId
-        });
+    const memberPromises = querySnapshot.docs.map(async (docSnap) => {
+      const membershipData = docSnap.data();
+      if (membershipData.userId !== ownerId) { // Skip owner as already added
+        const userDoc = await getDoc(doc(db, 'users', membershipData.userId));
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          state.members.set(membershipData.userId, {
+            id: membershipData.userId,
+            ...userData,
+            isOwner: false,
+            role: membershipData.role || 'member'
+          });
+        }
       }
     });
+    
+    await Promise.all(memberPromises);
     
     console.log("Loaded members:", state.members.size);
     renderMembersList();
@@ -346,6 +364,308 @@ async function handleMemberVisibilityToggle() {
   }
 }
 
+// --- MODAL FUNCTIONS ---
+function openMemberModal() {
+  if (elements.memberModalOverlay) {
+    elements.memberModalOverlay.style.display = 'flex';
+    loadPendingRequests();
+    renderCurrentMembersModal();
+  }
+}
+
+function closeMemberModal() {
+  if (elements.memberModalOverlay) {
+    elements.memberModalOverlay.style.display = 'none';
+  }
+  closeKebabMenu();
+}
+
+function closeKebabMenu() {
+  if (state.activeKebabMenu) {
+    state.activeKebabMenu.classList.remove('active');
+    state.activeKebabMenu = null;
+  }
+}
+
+// --- PENDING REQUESTS FUNCTIONS ---
+async function loadPendingRequests() {
+  try {
+    console.log("Loading pending requests for group:", state.groupId);
+    
+    const requestsQuery = query(
+      collection(db, 'memberRequests'),
+      where('groupId', '==', state.groupId),
+      where('status', '==', 'pending')
+    );
+    
+    const querySnapshot = await getDocs(requestsQuery);
+    
+    state.pendingRequests.clear();
+    
+    const requestPromises = querySnapshot.docs.map(async (docSnap) => {
+      const requestData = docSnap.data();
+      const userDoc = await getDoc(doc(db, 'users', requestData.userId));
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        state.pendingRequests.set(docSnap.id, {
+          id: docSnap.id,
+          ...requestData,
+          user: userData
+        });
+      }
+    });
+    
+    await Promise.all(requestPromises);
+    
+    renderPendingRequests();
+    
+  } catch (error) {
+    console.error("Error loading pending requests:", error);
+  }
+}
+
+function renderPendingRequests() {
+  if (!elements.pendingRequestsList || !elements.requestCount || !elements.noRequestsMessage) return;
+  
+  const requestsArray = Array.from(state.pendingRequests.values());
+  
+  if (elements.requestCount) {
+    elements.requestCount.textContent = requestsArray.length;
+  }
+  
+  if (requestsArray.length === 0) {
+    elements.pendingRequestsList.innerHTML = '';
+    elements.noRequestsMessage.style.display = 'block';
+    return;
+  }
+  
+  elements.noRequestsMessage.style.display = 'none';
+  elements.pendingRequestsList.innerHTML = '';
+  
+  requestsArray.forEach(request => {
+    const requestItem = document.createElement('div');
+    requestItem.className = 'member-request-item';
+    
+    const displayName = request.user.fullName || request.user.displayName || request.user.email || 'Unknown User';
+    const initials = getInitials(displayName);
+    
+    requestItem.innerHTML = `
+      <div class="member-info-modal">
+        <div class="member-avatar">${initials}</div>
+        <div class="member-details">
+          <div class="member-name-modal">${escapeHtml(displayName)}</div>
+          <div class="member-email">${escapeHtml(request.user.email || '')}</div>
+        </div>
+      </div>
+      <div class="member-actions">
+        <button class="btn-accept" data-request-id="${request.id}" data-action="accept">Accept</button>
+        <button class="btn-decline" data-request-id="${request.id}" data-action="decline">Decline</button>
+      </div>
+    `;
+    
+    elements.pendingRequestsList.appendChild(requestItem);
+  });
+}
+
+function renderCurrentMembersModal() {
+  if (!elements.currentMembersList || !elements.memberCountModal) return;
+  
+  const membersArray = Array.from(state.members.values());
+  
+  if (elements.memberCountModal) {
+    elements.memberCountModal.textContent = membersArray.length;
+  }
+  
+  if (membersArray.length === 0) {
+    if (elements.noMembersModalMessage) {
+      elements.noMembersModalMessage.style.display = 'block';
+    }
+    elements.currentMembersList.innerHTML = '';
+    return;
+  }
+  
+  if (elements.noMembersModalMessage) {
+    elements.noMembersModalMessage.style.display = 'none';
+  }
+  
+  elements.currentMembersList.innerHTML = '';
+  
+  // Sort members (owner first)
+  membersArray.sort((a, b) => {
+    if (a.isOwner && !b.isOwner) return -1;
+    if (!a.isOwner && b.isOwner) return 1;
+    return (a.fullName || a.displayName || a.email || '').localeCompare(
+      b.fullName || b.displayName || b.email || ''
+    );
+  });
+  
+  membersArray.forEach(member => {
+    const memberItem = document.createElement('div');
+    memberItem.className = 'member-item-modal';
+    
+    const displayName = member.fullName || member.displayName || member.email || 'User';
+    const initials = getInitials(displayName);
+    const isCurrentUser = member.id === state.currentUser.uid;
+    
+    let roleText = 'Member';
+    let roleClass = 'member';
+    if (member.isOwner) {
+      roleText = 'Owner';
+      roleClass = 'owner';
+    } else if (member.role === 'editor') {
+      roleText = 'Editor';
+      roleClass = 'editor';
+    }
+    
+    const kebabMenu = member.isOwner || isCurrentUser ? '' : `
+      <div class="kebab-menu" data-member-id="${member.id}">
+        <button class="kebab-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"></circle>
+            <circle cx="12" cy="5" r="1"></circle>
+            <circle cx="12" cy="19" r="1"></circle>
+          </svg>
+        </button>
+        <div class="kebab-menu-dropdown">
+          <button class="kebab-menu-item" data-action="toggle-editor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            ${member.role === 'editor' ? 'Remove Editor Access' : 'Grant Editor Access'}
+          </button>
+          <button class="kebab-menu-item danger" data-action="remove">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
+            Remove Member
+          </button>
+        </div>
+      </div>
+    `;
+    
+    memberItem.innerHTML = `
+      <div class="member-info-modal">
+        <div class="member-avatar">${initials}</div>
+        <div class="member-details">
+          <div class="member-name-modal">${escapeHtml(displayName)}</div>
+          <div class="member-email">${escapeHtml(member.email || '')}</div>
+          <span class="member-role ${roleClass}">${roleText}</span>
+        </div>
+      </div>
+      <div class="member-actions">
+        ${kebabMenu}
+      </div>
+    `;
+    
+    elements.currentMembersList.appendChild(memberItem);
+  });
+}
+
+// --- MEMBER ACTION HANDLERS ---
+async function handleMemberRequest(requestId, action) {
+  try {
+    const request = state.pendingRequests.get(requestId);
+    if (!request) return;
+    
+    if (action === 'accept') {
+      // Add to memberships collection
+      await addDoc(collection(db, 'memberships'), {
+        groupId: state.groupId,
+        userId: request.userId,
+        role: 'member',
+        joinedAt: serverTimestamp()
+      });
+      
+      // Update request status
+      await updateDoc(doc(db, 'memberRequests', requestId), {
+        status: 'accepted',
+        processedAt: serverTimestamp(),
+        processedBy: state.currentUser.uid
+      });
+      
+      // Reload data
+      await loadMembers();
+      await loadPendingRequests();
+      
+    } else if (action === 'decline') {
+      // Update request status
+      await updateDoc(doc(db, 'memberRequests', requestId), {
+        status: 'declined',
+        processedAt: serverTimestamp(),
+        processedBy: state.currentUser.uid
+      });
+      
+      await loadPendingRequests();
+    }
+    
+  } catch (error) {
+    console.error("Error handling member request:", error);
+    alert("Failed to process member request. Please try again.");
+  }
+}
+
+async function handleMemberAction(memberId, action) {
+  try {
+    const member = state.members.get(memberId);
+    if (!member || member.isOwner) return;
+    
+    if (action === 'toggle-editor') {
+      const newRole = member.role === 'editor' ? 'member' : 'editor';
+      
+      // Find and update membership document
+      const membershipQuery = query(
+        collection(db, 'memberships'),
+        where('groupId', '==', state.groupId),
+        where('userId', '==', memberId)
+      );
+      
+      const querySnapshot = await getDocs(membershipQuery);
+      if (!querySnapshot.empty) {
+        const membershipDoc = querySnapshot.docs[0];
+        await updateDoc(membershipDoc.ref, {
+          role: newRole,
+          updatedAt: serverTimestamp()
+        });
+        
+        // Reload members
+        await loadMembers();
+        renderCurrentMembersModal();
+      }
+      
+    } else if (action === 'remove') {
+      if (confirm(`Are you sure you want to remove ${member.fullName || member.displayName || member.email} from the group?`)) {
+        // Find and delete membership document
+        const membershipQuery = query(
+          collection(db, 'memberships'),
+          where('groupId', '==', state.groupId),
+          where('userId', '==', memberId)
+        );
+        
+        const querySnapshot = await getDocs(membershipQuery);
+        if (!querySnapshot.empty) {
+          const membershipDoc = querySnapshot.docs[0];
+          await deleteDoc(membershipDoc.ref);
+          
+          // Reload members
+          await loadMembers();
+          renderCurrentMembersModal();
+        }
+      }
+    }
+    
+    closeKebabMenu();
+    
+  } catch (error) {
+    console.error("Error handling member action:", error);
+    alert("Failed to perform action. Please try again.");
+  }
+}
+
+// --- TEST MANAGEMENT FUNCTIONS ---
 async function loadTests() {
   try {
     const testsQuery = query(
@@ -582,6 +902,7 @@ async function handleCopyCode() {
   }
 }
 
+// --- EVENT LISTENERS ---
 function setupEventListeners() {
   if (elements.logoutBtn) {
     elements.logoutBtn.addEventListener('click', () => signOut(auth));
@@ -602,6 +923,72 @@ function setupEventListeners() {
   if (elements.showMembersToggle) {
     elements.showMembersToggle.addEventListener('change', handleMemberVisibilityToggle);
   }
+  
+  // Member modal events
+  if (elements.manageMembersBtn) {
+    elements.manageMembersBtn.addEventListener('click', openMemberModal);
+  }
+  
+  if (elements.memberModalClose) {
+    elements.memberModalClose.addEventListener('click', closeMemberModal);
+  }
+  
+  if (elements.memberModalOverlay) {
+    elements.memberModalOverlay.addEventListener('click', (e) => {
+      if (e.target === elements.memberModalOverlay) {
+        closeMemberModal();
+      }
+    });
+  }
+  
+  // Handle member request actions
+  if (elements.pendingRequestsList) {
+    elements.pendingRequestsList.addEventListener('click', (e) => {
+      const button = e.target.closest('button[data-action]');
+      if (button) {
+        const requestId = button.dataset.requestId;
+        const action = button.dataset.action;
+        handleMemberRequest(requestId, action);
+      }
+    });
+  }
+  
+  // Handle kebab menu and member actions
+  if (elements.currentMembersList) {
+    elements.currentMembersList.addEventListener('click', (e) => {
+      const kebabBtn = e.target.closest('.kebab-btn');
+      const menuItem = e.target.closest('.kebab-menu-item');
+      
+      if (kebabBtn) {
+        e.stopPropagation();
+        const kebabMenu = kebabBtn.closest('.kebab-menu');
+        
+        // Close other menus
+        if (state.activeKebabMenu && state.activeKebabMenu !== kebabMenu) {
+          state.activeKebabMenu.classList.remove('active');
+        }
+        
+        // Toggle current menu
+        kebabMenu.classList.toggle('active');
+        state.activeKebabMenu = kebabMenu.classList.contains('active') ? kebabMenu : null;
+        
+      } else if (menuItem) {
+        const kebabMenu = menuItem.closest('.kebab-menu');
+        const memberId = kebabMenu.dataset.memberId;
+        const action = menuItem.dataset.action;
+        
+        handleMemberAction(memberId, action);
+      }
+    });
+  }
+  
+  // Close kebab menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.kebab-menu')) {
+      closeKebabMenu();
+    }
+  });
 }
 
+// --- INITIALIZE APP ---
 document.addEventListener('DOMContentLoaded', init);

@@ -37,7 +37,7 @@ const shuffleToggle = document.getElementById('shuffle-questions-toggle');
 const backToEditingBtn = document.getElementById('back-to-editing-btn');
 const saveDraftBtn = document.getElementById('save-draft-btn');
 
-// New Publish Dropdown Elements
+// Publish Dropdown Elements
 const publishMainBtn = document.getElementById('publish-main-btn');
 const publishDropdown = document.getElementById('publish-dropdown');
 const publishDropdownMenu = document.getElementById('publish-dropdown-menu');
@@ -61,10 +61,24 @@ function escapeHtml(str) {
     return p.innerHTML;
 }
 
-// Dropdown Management Functions
+// --- DROPDOWN MANAGEMENT FUNCTIONS ---
 function openPublishDropdown() {
-    if (publishDropdown) {
+    if (publishDropdown && publishDropdownMenu) {
         publishDropdown.classList.add('active');
+        
+        // Check if dropdown would go off-screen and adjust positioning
+        const dropdownRect = publishDropdownMenu.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const buttonRect = publishMainBtn.getBoundingClientRect();
+        
+        // Reset classes
+        publishDropdownMenu.classList.remove('align-left');
+        
+        // If dropdown would extend past right edge of screen
+        if (buttonRect.right + 200 > viewportWidth - 20) {
+            publishDropdownMenu.classList.add('align-left');
+        }
+        
         document.addEventListener('click', handleClickOutside);
     }
 }
@@ -94,6 +108,12 @@ function hideScheduleContainer() {
         scheduleContainer.style.display = 'none';
     }
 }
+
+// --- DEBOUNCE UTILITY ---
+const debounceSave = (func, delay) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(func, delay);
+};
 
 // --- INITIALIZATION & SECURITY ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -153,9 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    addEventListeners();
+    setupEventListeners();
 });
 
+// --- PERMISSION & DATA LOADING ---
 async function checkPermissionsAndLoadData() {
     try {
         const groupRef = doc(db, 'groups', groupId);
@@ -217,6 +238,7 @@ async function loadTestData() {
     }
 }
 
+// --- QUESTION RENDERING ---
 function renderQuestionCard(question) {
     if (!questionBuilder) return;
     
@@ -285,7 +307,7 @@ function renderQuestionCard(question) {
     questionBuilder.appendChild(card);
 }
 
-// Handle question type change
+// --- QUESTION TYPE HANDLING ---
 function handleQuestionTypeChange(card, newType) {
     const questionId = card.dataset.questionId;
     const question = testState.questions.get(questionId);
@@ -322,6 +344,7 @@ function handleQuestionTypeChange(card, newType) {
     saveQuestionState(card);
 }
 
+// --- QUESTION MANAGEMENT ---
 async function addQuestion() {
     try {
         const order = testState.questions.size;
@@ -397,11 +420,7 @@ function updateQuestionNumbers() {
     });
 }
 
-const debounceSave = (func, delay) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(func, delay);
-};
-
+// --- AUTOSAVE FUNCTIONALITY ---
 function handleAutosave(e) {
     const card = e.target.closest('.question-card');
     if (card) {
@@ -441,6 +460,7 @@ async function saveQuestionState(card) {
     }
 }
 
+// --- MODAL MANAGEMENT ---
 async function openSummaryModal() {
     try {
         if (!summaryModal) return;
@@ -472,6 +492,7 @@ function closeSummaryModal() {
     }
 }
 
+// --- TEST FINALIZATION ---
 async function finalizeTest(status, scheduledTime = null) {
     try {
         // Update title from summary modal
@@ -512,7 +533,8 @@ async function finalizeTest(status, scheduledTime = null) {
     }
 }
 
-function addEventListeners() {
+// --- EVENT LISTENERS SETUP (Fixed - renamed to match function call) ---
+function setupEventListeners() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => signOut(auth));
     }
@@ -554,13 +576,13 @@ function addEventListeners() {
         // Also show on hover for desktop
         if (publishDropdown) {
             publishDropdown.addEventListener('mouseenter', () => {
-                if (window.innerWidth > 768) { // Only on desktop
+                if (window.innerWidth > 768) {
                     openPublishDropdown();
                 }
             });
             
             publishDropdown.addEventListener('mouseleave', () => {
-                if (window.innerWidth > 768) { // Only on desktop
+                if (window.innerWidth > 768) {
                     setTimeout(() => {
                         if (!publishDropdown.matches(':hover')) {
                             closePublishDropdown();
@@ -680,4 +702,11 @@ function addEventListeners() {
             }
         });
     }
+
+    // Handle window resize to reposition dropdown if open
+    window.addEventListener('resize', () => {
+        if (publishDropdown && publishDropdown.classList.contains('active')) {
+            closePublishDropdown();
+        }
+    });
 }
