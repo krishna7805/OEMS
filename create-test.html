@@ -8,20 +8,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Main Project Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/dashboard.css">
-    <!-- New Page-Specific Styles -->
     <link rel="stylesheet" href="assets/css/create-test.css">
 </head>
 
 <body>
-    <!-- Header -->
     <header class="dashboard-header">
         <div class="container">
             <div class="header-content">
                 <div class="nav-brand">
-                    <!-- <span class="brand-text">ExamPlatform</span> -->
                      <img src="assets/images/OEMSLogo.png" alt="OEMSLogo" style="height: 3rem;">
                 </div>
                 <div class="user-menu">
@@ -34,32 +30,73 @@
 
     <main class="dashboard-main">
         <div class="container">
-            <!-- Test Editor Header -->
             <div class="editor-header">
                 <div class="editor-info">
                     <a href="#" id="back-to-group-link" class="back-link">&larr; Back to Group</a>
                     <input type="text" id="test-title-input" class="test-title-input" placeholder="Enter Test Title..." value="Untitled Test">
                 </div>
                 <div class="editor-actions">
+                    <div class="test-code-display">
+                        <span class="code-label">Test Code:</span>
+                        <code id="test-code-display">Loading...</code>
+                    </div>
                     <span class="status-badge" id="test-status-badge">Draft</span>
                     <button class="btn-primary" id="review-btn">Review & Finalize</button>
                 </div>
             </div>
 
-            <!-- Question Builder -->
             <div class="question-builder" id="question-builder">
-                <!-- Question cards will be dynamically inserted here by JavaScript -->
+                <!-- Question cards dynamically inserted -->
             </div>
 
+            <div class="add-question-container">
+                <button id="add-question-btn" class="btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Question
+                </button>
+                <div class="question-type-menu" id="question-type-menu">
+                    <button data-type="multiple-choice" class="question-type-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Multiple Choice
+                    </button>
+                    <button data-type="short-answer" class="question-type-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="15" y2="18"></line>
+                        </svg>
+                        Short Answer
+                    </button>
+                    <button data-type="ranking" class="question-type-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                        Ranking
+                    </button>
+                    <button data-type="likert" class="question-type-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"></path>
+                            <path d="M18 17V9"></path>
+                            <path d="M13 17V5"></path>
+                            <path d="M8 17v-3"></path>
+                        </svg>
+                        Likert Scale
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
-
-    <!-- Floating Action Button to Add Question -->
-    <button id="add-question-fab" class="fab" title="Add New Question">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-    </button>
     
-    <!-- Test Summary Modal (hidden by default) -->
     <div class="modal-overlay" id="summary-modal-overlay">
         <div class="summary-modal-container">
             <div class="summary-modal-header">
@@ -75,16 +112,16 @@
                     <label for="summary-description">Test Description / Instructions</label>
                     <div class="rich-text-editor">
                         <div class="toolbar" id="summary-toolbar">
-                            <button data-command="bold"><b>B</b></button>
-                            <button data-command="italic"><i>I</i></button>
-                            <button data-command="underline"><u>U</u></button>
-                            <button data-command="insertUnorderedList">●</button>
+                            <button type="button" data-command="bold"><b>B</b></button>
+                            <button type="button" data-command="italic"><i>I</i></button>
+                            <button type="button" data-command="underline"><u>U</u></button>
+                            <button type="button" data-command="insertUnorderedList">●</button>
                         </div>
                         <div id="summary-description" class="neu-input editable-div" contenteditable="true" placeholder="e.g., This test covers chapters 1-5. You will have 30 minutes to complete it."></div>
                     </div>
                 </div>
                 <div class="summary-item">
-                    <label>Direct Test Code (Auto-Generated)</label>
+                    <label>Direct Test Code</label>
                     <p class="summary-code" id="summary-test-code"></p>
                 </div>
                 <div class="summary-details">
@@ -138,7 +175,6 @@
                 </div>
             </div>
             
-            <!-- Schedule container (hidden by default) -->
             <div class="schedule-container" id="schedule-container" style="display: none;">
                 <div class="schedule-content">
                     <label for="schedule-datetime">Publish on:</label>
@@ -149,6 +185,7 @@
                     </div>
                 </div>
             </div>
+        </div>
     </div>
 
     <script src="assets/js/create-test.js" type="module"></script>

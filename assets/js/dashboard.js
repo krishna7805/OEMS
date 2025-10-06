@@ -427,7 +427,12 @@ async function handleEditProfileSubmit(e) {
 
 // Group management functions (keeping existing functionality)
 async function loadUserGroups() {
-    if (!currentUser) return;
+    if (!currentUser) {
+        console.error('No current user');
+        return;
+    }
+    
+    console.log('Loading groups for user:', currentUser.uid);
     
     // Clear both grids
     if (createdGroupsGrid) createdGroupsGrid.innerHTML = '';
@@ -442,16 +447,22 @@ async function loadUserGroups() {
         const membershipQ = query(collection(db, 'memberships'), where('userId', '==', currentUser.uid));
         const membershipSnap = await getDocs(membershipQ);
         
+        console.log('Found memberships:', membershipSnap.size);
+        
         if (membershipSnap.empty) {
-            return; // No groups at all
+            console.log('No memberships found');
+            return;
         }
 
         // Collect unique group IDs
         const groupIdSet = new Set();
         membershipSnap.forEach(docSnap => {
             const data = docSnap.data();
+            console.log('Membership data:', data);
             if (data.groupId) groupIdSet.add(data.groupId);
         });
+
+        console.log('Unique group IDs:', Array.from(groupIdSet));
 
         if (groupIdSet.size === 0) return;
 
@@ -461,43 +472,37 @@ async function loadUserGroups() {
             try {
                 const gSnap = await getDoc(doc(db, 'groups', id));
                 if (gSnap.exists()) {
+                    console.log('Group found:', id, gSnap.data());
                     groups.push({ id: gSnap.id, ...gSnap.data() });
+                } else {
+                    console.warn('Group not found:', id);
                 }
             } catch (err) {
-                console.warn('Failed to fetch group', id, err);
+                console.error('Failed to fetch group', id, err);
             }
         }
 
-        if (groups.length === 0) return;
+        console.log('Total groups loaded:', groups.length);
 
-        // Separate created vs joined groups
+        if (groups.length === 0) {
+            console.warn('No valid groups found');
+            return;
+        }
+
+        // Separate created and joined groups
         const createdGroups = groups.filter(g => g.ownerId === currentUser.uid);
         const joinedGroups = groups.filter(g => g.ownerId !== currentUser.uid);
 
-        // Get member counts for all groups
-        try {
-            const countPromises = groups.map(g =>
-                getDocs(query(collection(db, 'memberships'), where('groupId', '==', g.id)))
-                    .then(snap => snap.size)
-                    .catch(err => {
-                        console.warn('Failed to count members for', g.id, err);
-                        return g.membersCount || 0;
-                    })
-            );
-            const counts = await Promise.all(countPromises);
-            groups.forEach((g, i) => {
-                g.membersCount = typeof counts[i] === 'number' ? counts[i] : (g.membersCount || 0);
-            });
-        } catch (err) {
-            console.warn('Failed to compute member counts:', err);
-            groups.forEach(g => { g.membersCount = g.membersCount || 0; });
-        }
+        console.log('Created groups:', createdGroups.length);
+        console.log('Joined groups:', joinedGroups.length);
 
         // Render created groups
         if (createdGroups.length > 0) {
             if (noCreatedGroupsMessage) noCreatedGroupsMessage.style.display = 'none';
             if (createdGroupsGrid) {
-                createdGroupsGrid.innerHTML = createdGroups.map(g => renderGroupCard(g, true)).join('');
+                createdGroupsGrid.innerHTML = createdGroups
+                    .map(g => renderGroupCard(g, true))
+                    .join('');
                 attachGroupEventListeners(createdGroupsGrid);
             }
         }
@@ -506,16 +511,19 @@ async function loadUserGroups() {
         if (joinedGroups.length > 0) {
             if (noJoinedGroupsMessage) noJoinedGroupsMessage.style.display = 'none';
             if (joinedGroupsGrid) {
-                joinedGroupsGrid.innerHTML = joinedGroups.map(g => renderGroupCard(g, false)).join('');
+                joinedGroupsGrid.innerHTML = joinedGroups
+                    .map(g => renderGroupCard(g, false))
+                    .join('');
                 attachGroupEventListeners(joinedGroupsGrid);
             }
         }
 
         // Update profile stats
         await updateProfileStats();
-
+        
     } catch (err) {
         console.error('Error loading groups:', err);
+        showToast(`Error loading groups: ${err.message}`, 'error');
     }
 }
 
@@ -669,34 +677,31 @@ async function handleCreateGroup() {
 
     try {
         const code = generateGroupCode();
+        
+        // Create group first
         const grpRef = await addDoc(collection(db, 'groups'), {
             name: name.trim(),
             ownerId: currentUser.uid,
             code,
             membersCount: 1,
             testsCount: 0,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            showMembersToAll: true // Add default setting
         });
 
-        // Add owner as a member
-        const memQ = query(collection(db, 'memberships'),
-                           where('userId', '==', currentUser.uid),
-                           where('groupId', '==', grpRef.id));
-        const memSnap = await getDocs(memQ);
-        if (memSnap.empty) {
-            await addDoc(collection(db, 'memberships'), {
-                userId: currentUser.uid,
-                groupId: grpRef.id,
-                role: 'owner',
-                joinedAt: serverTimestamp()
-            });
-        }
+        // Then add owner as member (no need to check existence)
+        await addDoc(collection(db, 'memberships'), {
+            userId: currentUser.uid,
+            groupId: grpRef.id,
+            role: 'owner',
+            joinedAt: serverTimestamp()
+        });
 
         await loadUserGroups();
         showToast(`Group created successfully! Code: ${code}`, 'success');
     } catch (err) {
         console.error('Error creating group:', err);
-        showToast('Failed to create group. Please try again.', 'error');
+        showToast(`Failed to create group: ${err.message}`, 'error');
     }
 }
 
@@ -773,8 +778,60 @@ function handleTakeTest(e) {
     window.location.href = `take-test.html?code=${encodeURIComponent(code)}`;
 }
 
+
+// ...existing code...
+
+async function ensureUserDocument(user) {
+    try {
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+        
+        if (!userSnap.exists()) {
+            console.log('Creating user document for:', user.uid);
+            await setDoc(userRef, {
+                email: user.email,
+                displayName: user.displayName || '',
+                firstName: '',
+                lastName: '',
+                bio: '',
+                phone: '',
+                location: '',
+                website: '',
+                profileImageUrl: '',
+                createdAt: serverTimestamp()
+            });
+        }
+    } catch (err) {
+        console.error('Error ensuring user document:', err);
+    }
+}
+
 function init() {
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            redirectToLanding();
+            return;
+        }
+        
+        currentUser = user;
+        
+        // Ensure user document exists
+        await ensureUserDocument(user);
+        
+        // ...rest of existing code...
+        await loadProfileData();
+        await loadUserGroups();
+    });
     // Get DOM elements
+    // Add this temporarily in dashboard.js init()
+    
+    
+    // console.log('Auth:', auth);
+    // console.log('DB:', db);
+    // console.log('Current User:', currentUser);
+
+
     userDisplayName = document.getElementById('user-display-name');
     profileName = document.getElementById('profile-name');
     profileEmail = document.getElementById('profile-email');
@@ -812,6 +869,25 @@ function init() {
     progressText = document.getElementById('progress-text');
     saveProfileBtn = document.getElementById('save-profile-btn');
 
+   
+   // Add after init() function
+window.debugFirestore = async function() {
+    console.log('=== FIRESTORE DEBUG ===');
+    console.log('Current User:', currentUser);
+    
+    try {
+        const groupsSnap = await getDocs(collection(db, 'groups'));
+        console.log('All groups:', groupsSnap.size);
+        groupsSnap.forEach(doc => console.log(doc.id, doc.data()));
+        
+        const membershipsSnap = await getDocs(collection(db, 'memberships'));
+        console.log('All memberships:', membershipsSnap.size);
+        membershipsSnap.forEach(doc => console.log(doc.id, doc.data()));
+    } catch (err) {
+        console.error('Debug error:', err);
+    }
+};
+   
     // Auth state listener
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
