@@ -832,7 +832,7 @@ function init() {
     // console.log('Current User:', currentUser);
 
 
-    userDisplayName = document.getElementById('user-display-name');
+    // userDisplayName = document.getElementById('user-display-name');
     profileName = document.getElementById('profile-name');
     profileEmail = document.getElementById('profile-email');
     profileBioDisplay = document.getElementById('profile-bio-display');

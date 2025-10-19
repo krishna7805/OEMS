@@ -227,7 +227,7 @@ body {
 
 .profile-card {
     background: var(--card-bg);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius);
     box-shadow: var(--shadow-neumorphic);
     padding: 2rem;
     transition: var(--transition-smooth);
